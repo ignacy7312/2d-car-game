@@ -1,5 +1,5 @@
 # 2d-car-game
-a project for an oop class. 
+a project for the oop class. 
 
 # Schemat projektu
 
