@@ -16,7 +16,7 @@ Możliwości:
 - kierowanie pojazdem (lewo-prawo)
 - zbieranie punktów oraz monet
 - omijanie przeszkód pojawiających się losowo na drodze
-- zbieranie wzmocnień oraz HP ??
+- zbieranie wzmocnień oraz HP, paliwa ??
 - zapisanie postępu i wczytanie go po włączeniu gry (serialization)
 
 kilka ekranów:
@@ -25,4 +25,4 @@ kilka ekranów:
 - mapa
 
 
-**poruszanie się gracza po osi X, collision detection, liczenie puntków, liczenie czasu, przesuwanie się mapy po osi Y, generowanie przeszkód i wzmocnień, zmiana ekranów**
+**poruszanie się gracza po osi X, collision detection, liczenie puntków, liczenie czasu, przesuwanie się mapy po osi Y, generowanie przeszkód i wzmocnień, zmiana ekranów, zbieranie paliwa **
