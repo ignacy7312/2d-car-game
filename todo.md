@@ -4,13 +4,14 @@ na przyszły tydzień zrobić model programu - rozpisać klasy i obiekty
 zrobić folder docs i korzystać z diagrams.net
 
 
-- klasa gra 
+klasa gra 
 plik settings
-- klasa ekran
-- klasa auto:
+klasa ekran
+klasa auto:
 własności
 metody
-- klasa mapa (dziedziczenie z ekran):
+klasa ekran
+klasa mapa:
 obiekt miasto itp
 
 
