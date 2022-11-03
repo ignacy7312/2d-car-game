@@ -17,15 +17,32 @@ class GameScreen():
         self.w = w
         self.h = h
         self.screen = pygame.display.set_mode((self.w, self.h))
-        
+        self.scroll = 0
+        self.background = pygame.image.load('textures/tlogry.png').convert_alpha()
+        # ile obrazkow ma byc w bufforze
+        self.tiles = math.ceil(self.w / self.background.get_height()) + 2
+        print(self.tiles)
         
         
 
     def display_bg(self):
         # wyświetl tło 
         
-        self.background = pygame.transform.scale(self.background, (self.w, self.h))
-        self.screen.blit(self.background, (0,0))
+          # wyświetl tło
+        #self.background = pygame.transform.scale(self.background, (self.w, self.h))
+
+
+        self.i = 0
+        while (self.i < self.tiles):
+            self.screen.blit(self.background, (0
+                             , self.background.get_height() * -self.i + self.scroll))
+            self.i += 1
+
+        self.scroll += 5
+
+        # resetowanie scrolla
+        if abs(self.scroll) > self.background.get_height():
+            self.scroll = 0
         
         
 
@@ -57,7 +74,6 @@ class Map(GameScreen):
 
     def __init__(self, w, h):
         super().__init__(w, h)
-        self.background = pygame.image.load('textures/tlogry.png').convert_alpha()
         self.baner = pygame.image.load('textures/baner.png').convert_alpha()
         self.baner = pygame.transform.rotozoom(self.baner, 0, 0.30) # powinna być na to funkcja, ale już mi się nie chce
         # i ogólnie elementy mapy pewnie powinny być w jakiejś liście
