@@ -56,7 +56,7 @@ class Player(Character):
     def __init__(self, x, y):
         # konstruktor, wymaga podania startowej pozycji gracza (auta)
         super().__init__(x, y)
-        self.normal_image = self.load_and_rescale('textures/auto.png', 0.22, 180)
+        self.normal_image = self.load_and_rescale('textures/auto.png', 0.2, 180)
         self.normal_rect = self.normal_image.get_rect(center = (self.x, self.y))
         self.turnleft_image = pygame.transform.rotate(self.normal_image, 20)
         self.turnleft_rect = self.turnleft_image.get_rect(center = (self.x, self.y))
@@ -86,8 +86,8 @@ class Player(Character):
             self.image = self.normal_image
             self.rect = self.normal_rect
 
-    # def display_player_turning(self, screen):
-    #    screen.blit(self.turnleft_image, self.turnleft_rect)
+        
+        print(self.rect.width, self.rect.height)
     
 
 class Obstacle(Character):
@@ -122,7 +122,7 @@ class Obstacle(Character):
         # zwróć losowe x i y z zakresu (zakres tymczasowy, nie liczyłem pikseli)
         # powinna raczej zwracać wartości z większym skokiem,
         # żeby nie było sytuacji, gdzie przeszkoda pojawia się np na linii oddzielającej pasy
-        return random.randint(250, 500), random.randint(0, 100)
+        return random.randint(140, 470), random.randint(0, 100)
 
 
 

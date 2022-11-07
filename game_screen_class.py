@@ -1,5 +1,6 @@
 import settings
 from character import *
+import math
 
 import pygame
 
@@ -21,16 +22,13 @@ class GameScreen():
         self.background = pygame.image.load('textures/tlogry.png').convert_alpha()
         # ile obrazkow ma byc w bufforze
         self.tiles = math.ceil(self.w / self.background.get_height()) + 2
-        print(self.tiles)
+        # print(self.tiles)
         
         
 
     def display_bg(self):
         # wyświetl tło 
-        
-          # wyświetl tło
         #self.background = pygame.transform.scale(self.background, (self.w, self.h))
-
 
         self.i = 0
         while (self.i < self.tiles):
@@ -44,8 +42,6 @@ class GameScreen():
         if abs(self.scroll) > self.background.get_height():
             self.scroll = 0
         
-        
-
 
         '''# self.screen.blit(self.car, self.car_rect)
         # self.screen.blit(self.baner, self.baner_rect)
@@ -58,6 +54,23 @@ class GameScreen():
            
             #self.baner = pygame.transform.rotozoom(self.baner,0,self.car_scale)
             #self.baner_rect = self.baner.get_rect(center =(self.w - 250, self.h - 450))
+
+
+
+class MenuScreen(GameScreen):
+    def __init__(self, w, h):
+        super().__init__(w, h)
+        self.font = pygame.font.Font(None, 64)
+        self.text = self.font.render("press SPACE to start", False, 'yellow')
+        self.text_rect = self.text.get_rect(center = (self.w//2, self.h//2))
+
+    def display_menu(self):
+        self.screen.fill('white')
+        self.screen.blit(self.text, self.text_rect)
+
+
+
+
 
 
 class Map(GameScreen):
@@ -78,13 +91,21 @@ class Map(GameScreen):
         self.baner = pygame.transform.rotozoom(self.baner, 0, 0.30) # powinna być na to funkcja, ale już mi się nie chce
         # i ogólnie elementy mapy pewnie powinny być w jakiejś liście
         self.baner_rect = self.baner.get_rect(center = (self.w - 150, 300))
-        
-        self.game_speed = 1
-
-        
+        self.game_speed = 1 
         self.player1 = Player(350,700) # wstępna pozycja
         # self.obs = Obstacle() # powinna być lista przeszkód, ale to już dalszy etap
         self.obstacles = []
+        self.game_over = True
+        
+        self.score = 0
+        self.font = pygame.font.Font(None, 24)
+        
+
+    def display_score(self):
+        self.calculate_score()
+        self.score_txt = self.font.render(f'score: {self.score}', True, 'black')
+        self.score_txt_rect = self.score_txt.get_rect(topleft = (10, 10))
+        self.screen.blit(self.score_txt, self.score_txt_rect)
         
     def increase_speed(self):
         # przyspiesz grę o 1.01 co 3 sekundy -- wartości można zmienić
@@ -94,9 +115,10 @@ class Map(GameScreen):
     def update_characters(self):
         # funkcja updateująca pozycję na ekranie gracza i przeszkody
         # w momencie kolizji ekran freezuje (wstępnie)
-        print(self.game_speed)
+        # print(self.game_speed)
         self.increase_speed()
         self.add_obstacle()
+        self.game_over = self.check_for_obs_collision()
         
         # self.obs.move()
         # self.obs.rect.y = self.obs.y
@@ -130,7 +152,7 @@ class Map(GameScreen):
             if obstacle:    
                 obstacle.move(self.game_speed)
                 obstacle.rect.y = obstacle.y
-                if obstacle.y > self.h:
+                if obstacle.y > self.h + 100:
                     # gdy przeszkoda wyjdzie poza ekran jest usuwana z listy i obiekt też jest usuwany
                     self.obstacles.remove(obstacle)
                     del obstacle
@@ -140,10 +162,12 @@ class Map(GameScreen):
         if random.randint(1, 100) % 97 == 0 and len(self.obstacles) < 4:
             self.obstacles.append(Obstacle())        
 
-    def check_for_collision(self) -> bool:
+    def check_for_obs_collision(self) -> bool:
         # sprawdza czy występuje kolizja gracza z przeszkodą
+        # BARDZO NIEDOKŁADNA
         for obstacle in self.obstacles:
             if pygame.Rect.colliderect(obstacle.rect, self.player1.rect):
+                # self.game_over = True
                 return True
             
 
@@ -160,4 +184,14 @@ class Map(GameScreen):
         for obstacle in self.obstacles:
             obstacle.display_character(self.screen)
 
-    
+    def calculate_score(self):
+        self.score += int((pygame.time.get_ticks() * self.game_speed) // 1000)
+
+
+
+    def is_game_over(self) -> bool:
+        return self.game_over
+
+
+
+

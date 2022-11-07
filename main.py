@@ -29,24 +29,39 @@ class Game:
         # odpala game loop
 
         game_screen = Map(self.w, self.h) # obiekt mapy
+        menu_screen = MenuScreen(self.w, self.h) # obiekt menu
+        self.game_over = game_screen.is_game_over()
  
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
+            
+            self.game_over = game_screen.is_game_over()
         
+            if not self.game_over:
+                game_screen.update_characters()
+                game_screen.display_bg()
+                game_screen.display_map_elements()
+                game_screen.display_characters()
+                game_screen.display_score()
+                print(game_screen.score)
 
-            game_screen.update_characters()
-            game_screen.display_bg()
-            game_screen.display_map_elements()
-            game_screen.display_characters()
+            if self.game_over:
+                # kiedy się przegra 
+                menu_screen.display_menu()
+                if pygame.key.get_pressed()[pygame.K_SPACE]:
+                    del game_screen
+                    game_screen = Map(self.w, self.h)
+                    game_screen.game_over = False
+
 
             pygame.display.update()
             self.clock.tick(self.fps)
 
 
-# chujowo przesklaowane póki co ale imo nasza goto rozdziała powinna być podobna do tej
+
 screen_resolution = (600,800)
 SCREEN_WIDTH = screen_resolution[0]
 SCREEN_HEIGHT = screen_resolution[1]
