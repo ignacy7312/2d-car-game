@@ -99,7 +99,6 @@ class Obstacle(Character):
 
     Startowe pozycje x,y przeszkód generowane są losowo
     obraz przeszkody (i później jej typ) generowany także losowo
-
     """
 
     # lista przeszkód

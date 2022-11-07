@@ -31,13 +31,14 @@ class Game:
         game_screen = Map(self.w, self.h) # obiekt mapy
         menu_screen = MenuScreen(self.w, self.h) # obiekt menu
         self.game_over = game_screen.is_game_over()
- 
+
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
             
+            # czy game_over
             self.game_over = game_screen.is_game_over()
         
             if not self.game_over:

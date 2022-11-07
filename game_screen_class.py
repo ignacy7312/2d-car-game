@@ -50,10 +50,10 @@ class GameScreen():
 
 
     def rescale_background(self):
-           self.background = pygame.transform.scale(self.background, (self.w, self.h))
-           
-            #self.baner = pygame.transform.rotozoom(self.baner,0,self.car_scale)
-            #self.baner_rect = self.baner.get_rect(center =(self.w - 250, self.h - 450))
+        self.background = pygame.transform.scale(self.background, (self.w, self.h)) 
+        
+        #self.baner = pygame.transform.rotozoom(self.baner,0,self.car_scale)
+        #self.baner_rect = self.baner.get_rect(center =(self.w - 250, self.h - 450))
 
 
 
@@ -67,9 +67,6 @@ class MenuScreen(GameScreen):
     def display_menu(self):
         self.screen.fill('white')
         self.screen.blit(self.text, self.text_rect)
-
-
-
 
 
 
