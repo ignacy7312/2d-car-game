@@ -203,5 +203,9 @@ class Map(GameScreen):
         return self.game_over
 
 
+    def save_highscore(self):
+        self.highscore_file =
+
+
 
 

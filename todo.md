@@ -17,3 +17,12 @@ obiekt miasto itp
 
 rodział na mechanikę gry logikę i grafikę 
 + kilka rysunków jak ma wyglądać ekran
+
+Co Robert ma zrobic?:
+
+- HP 
+
+- SQ lite
+
+- przyciski menu
+
