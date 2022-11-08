@@ -9,9 +9,7 @@ class Game:
     """
     Główna klasa gry
     w,h - rozdzielczość ekranu
-    fps, zegar - wiadomo
     
-    game_speed i game_over póki co None, ale dodaję żeby już było
     """
     pygame.init()
     pygame.display.set_caption('HIGH RIDE')
@@ -28,8 +26,10 @@ class Game:
     def run(self):
         # odpala game loop
 
-        game_screen = Map(self.w, self.h) # obiekt mapy
-        menu_screen = MenuScreen(self.w, self.h) # obiekt menu
+        # obiekt mapy: 
+        game_screen = Map(self.w, self.h) 
+        # obiekt prowizorycznego menu
+        menu_screen = MenuScreen(self.w, self.h) 
         self.game_over = game_screen.is_game_over()
 
         while True:
@@ -47,11 +47,11 @@ class Game:
                 game_screen.display_map_elements()
                 game_screen.display_characters()
                 game_screen.display_score()
-                print(game_screen.score)
 
             if self.game_over:
-                # kiedy się przegra 
+                # kiedy się przegra - poki co jedna kolizja z przeszkodą
                 menu_screen.display_menu()
+                menu_screen.display_score(game_screen.score)
                 if pygame.key.get_pressed()[pygame.K_SPACE]:
                     del game_screen
                     game_screen = Map(self.w, self.h)

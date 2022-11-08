@@ -60,13 +60,18 @@ class GameScreen():
 class MenuScreen(GameScreen):
     def __init__(self, w, h):
         super().__init__(w, h)
-        self.font = pygame.font.Font(None, 64)
-        self.text = self.font.render("press SPACE to start", False, 'yellow')
+        self.font = pygame.font.Font("textures/font.ttf", 24)
+        self.text = self.font.render("press SPACE to start", True, 'black')
         self.text_rect = self.text.get_rect(center = (self.w//2, self.h//2))
 
     def display_menu(self):
         self.screen.fill('white')
         self.screen.blit(self.text, self.text_rect)
+        
+    def display_score(self, score):
+        score_txt = self.font.render(f'score: {score}', True, 'black')
+        score_txt_rect = score_txt.get_rect(center = (self.w//2, 200))
+        self.screen.blit(score_txt, score_txt_rect)
 
 
 
@@ -89,18 +94,27 @@ class Map(GameScreen):
         # i ogólnie elementy mapy pewnie powinny być w jakiejś liście
         self.baner_rect = self.baner.get_rect(center = (self.w - 150, 300))
         self.game_speed = 1 
-        self.player1 = Player(350,700) # wstępna pozycja
+        self.player1 = Player(350,670) # wstępna pozycja
         # self.obs = Obstacle() # powinna być lista przeszkód, ale to już dalszy etap
         self.obstacles = []
         self.game_over = True
         
         self.score = 0
-        self.font = pygame.font.Font(None, 24)
+        self.font = pygame.font.Font("textures/font.ttf", 16)
         
+
+    # -------------DEBUG------------------------
+    def display_debug_rect(self):
+        pygame.draw.rect(self.screen, 'green', self.player1.rect, 2)
+        for obstacle in self.obstacles:
+            pygame.draw.rect(self.screen, 'blue', obstacle.rect, 2)
+
+
+
 
     def display_score(self):
         self.calculate_score()
-        self.score_txt = self.font.render(f'score: {self.score}', True, 'black')
+        self.score_txt = self.font.render(f'score: {self.score}', True, 'gold')
         self.score_txt_rect = self.score_txt.get_rect(topleft = (10, 10))
         self.screen.blit(self.score_txt, self.score_txt_rect)
         
@@ -130,14 +144,12 @@ class Map(GameScreen):
             
     def check_for_border_collision(self) -> list[bool, bool]:
         # zwraca kolizję z granicą w postaci dwuelementowej listy
-        # w któej idx 0 oznacza kolizję z lewą granicą drogi
-        # a idx 1 oznacza kolizję z prawą granicą drogi
-        # jeżeli doda się możliwość przeszkalowania ekranu trzeba też będzie
-        # wartości const zmienić na jakieś variable
-        if 110 > self.player1.x:
+        # w któej idx 0 oznacza kolizję z lewą granicą drogi, a idx 1 oznacza kolizję z prawą granicą drogi
+        # jeżeli doda się możliwość przeszkalowania ekranu trzeba też będzie wartości const zmienić na jakieś variable
+        if 135 > self.player1.x:
             # kolizja z lewej strony
             return [True, False]
-        elif self.player1.rect.left > 380: # or self.player1.rect.right > 490:
+        elif self.player1.rect.left > 405: # or self.player1.rect.right > 490:
             # kolizja z prawej strony 
             return [False, True]
         # jeżeli brak kolizji
@@ -176,6 +188,7 @@ class Map(GameScreen):
     def display_characters(self):
         # wyświetla charactery    
         self.player1.display_character(self.screen)
+        self.display_debug_rect()
         # self.player1.display_player_turning(self.screen)
         # self.obs.display_character(self.screen)
         for obstacle in self.obstacles:

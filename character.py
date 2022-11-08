@@ -56,14 +56,18 @@ class Player(Character):
     def __init__(self, x, y):
         # konstruktor, wymaga podania startowej pozycji gracza (auta)
         super().__init__(x, y)
-        self.normal_image = self.load_and_rescale('textures/auto.png', 0.2, 180)
+        self.normal_image = self.load_and_rescale('textures/auto.png', 0.22, 180)
         self.normal_rect = self.normal_image.get_rect(center = (self.x, self.y))
         self.turnleft_image = pygame.transform.rotate(self.normal_image, 20)
-        self.turnleft_rect = self.turnleft_image.get_rect(center = (self.x, self.y))
-        self.turnright_image = pygame.transform.rotate(self.normal_image, -20)
-        self.turnright_rect = self.turnright_image.get_rect(center = (self.x, self.y))
+        # self.turnleft_rect = self.normal_image.get_rect(center = (self.x - 50, self.y))
+        # self.turnleft_rect = self.turnleft_image.get_rect(center = (self.x, self.y))
+        self.turnright_image = pygame.transform.rotate(self.normal_image, 340)
+        # self.turnright_rect = self.normal_image.get_rect(center = (self.x + 50, self.y))
+        # self.turnright_rect = self.turnright_image.get_rect(center = (self.x, self.y))
         self.image = self.normal_image
         self.rect = self.normal_rect
+        
+        # !!!! rect powinien być tylko jeden, nie ma potrzeby na więcej
         
         self.game_money = 0
         self.score = 0
@@ -72,23 +76,25 @@ class Player(Character):
 
     def move(self, collision):
         if pygame.key.get_pressed()[pygame.K_a] and not collision[0]:
-            # print("pressed a ", self.x )
+            # jezeli wciska sie 'a' i nie ma kolizji z lewą stroną
             self.x -= self.dx
             self.image = self.turnleft_image
-            self.rect = self.turnleft_rect
-            #self.image = pygame.transform.rotate(self.image, 30)
+            # self.rect.x = self.turnleft_rect
         elif pygame.key.get_pressed()[pygame.K_d] and not collision[1]:
-            # print("pressed d")
+            # jezeli wciska sie 'd' i nie ma kolizji z prawą stroną
             self.x += self.dx
             self.image = self.turnright_image
-            self.rect = self.turnright_rect
+            # self.rect = self.turnright_rect
         else:
+            # jeżeli auto jedzie prost
             self.image = self.normal_image
             self.rect = self.normal_rect
 
         
         print(self.rect.width, self.rect.height)
     
+    
+        
 
 class Obstacle(Character):
 
