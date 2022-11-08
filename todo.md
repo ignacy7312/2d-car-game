@@ -22,7 +22,7 @@ Co Robert ma zrobic?:
 
 - HP 
 
-- SQ lite
+- SQ lite  https://docs.python.org/3/library/sqlite3.html
 
 - przyciski menu
 
