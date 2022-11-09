@@ -1,6 +1,6 @@
 import pygame
 import random
-
+import settings
 
 
 class Character(pygame.sprite.Sprite):
@@ -72,17 +72,17 @@ class Player(Character):
         self.game_money = 0
         self.score = 0
         self.hp = 3
-        self.dx = 4
+        self.dx = 6
 
     def move(self, collision):
         if pygame.key.get_pressed()[pygame.K_a] and not collision[0]:
             # jezeli wciska sie 'a' i nie ma kolizji z lewą stroną
-            self.x -= self.dx
+            self.x -= int(self.dx)
             self.image = self.turnleft_image
             # self.rect.x = self.turnleft_rect
         elif pygame.key.get_pressed()[pygame.K_d] and not collision[1]:
             # jezeli wciska sie 'd' i nie ma kolizji z prawą stroną
-            self.x += self.dx
+            self.x += int(self.dx)
             self.image = self.turnright_image
             # self.rect = self.turnright_rect
         else:
@@ -91,7 +91,7 @@ class Player(Character):
             self.rect = self.normal_rect
 
         
-        print(self.rect.width, self.rect.height)
+        print(self.rect.width, self.rect.height, self.dx)
     
     
         
@@ -101,14 +101,16 @@ class Obstacle(Character):
     """
     
     Klasa przeszkoda
-    Jej obiekty reprezentują przeszkody pojawiające się na ekranie
+    Jej obiekty reprezentują przeszkody pojawiające się na ekranie.
+    Przeszkody dzielą się na statyczne i dynamiczne
 
     Startowe pozycje x,y przeszkód generowane są losowo
     obraz przeszkody (i później jej typ) generowany także losowo
     """
 
     # lista przeszkód
-    obstacle_path_list = ['obstacle1.png', 'obstacle2.png', 'obstacle3.png']
+    obstacle_path_list = ['obstacle1.png', 'obstacle2.png', 'obstacle3.png', 'obstacle4.png']
+    obstacle_center_positions = settings.lanes_center_list
 
     def __init__(self):
         # konstruktor, nie wymaga argumentów, bo x i y są generowane losowo
@@ -116,18 +118,20 @@ class Obstacle(Character):
         super().__init__(self.x, self.y)
         self.image = pygame.image.load(self.get_obstacle()).convert_alpha()
         self.rect = self.image.get_rect(center = (self.x, self.y))
-        self.dy = 5
+        self.dy = 8
+
 
     
     def get_obstacle(self) -> str:
         # zwraca path do losowej przeszkody z listy przeszkód
         return 'textures/' + random.choice(Obstacle.obstacle_path_list)
 
-    def get_random_position(self) -> tuple(int, int):
-        # zwróć losowe x i y z zakresu (zakres tymczasowy, nie liczyłem pikseli)
-        # powinna raczej zwracać wartości z większym skokiem,
-        # żeby nie było sytuacji, gdzie przeszkoda pojawia się np na linii oddzielającej pasy
-        return random.randint(140, 470), random.randint(0, 100)
+    def get_random_position(self) -> [int, int]:
+        # zwróć jedną z czterech możliwych pozycji - w środku każdego z pasów ruchu 
+        # na wysokości ponad ekranem, żeby był efekt wyjechania przeszkody na ekran,
+        # a nie że po prostu się losowo pojawia 
+        
+        return random.choice(Obstacle.obstacle_center_positions), random.randint(-200, 0)
 
 
 

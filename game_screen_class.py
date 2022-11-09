@@ -96,6 +96,7 @@ class Map(GameScreen):
         self.game_speed = 1 
         self.player1 = Player(350,670) # wstępna pozycja
         self.obstacles = []
+
         self.game_over = True
         
         self.score = 0
@@ -118,9 +119,11 @@ class Map(GameScreen):
         self.screen.blit(self.score_txt, self.score_txt_rect)
         
     def increase_speed(self):
-        # przyspiesz grę o 1.01 co 3 sekundy -- wartości można zmienić
+        # przyspiesz grę co 3 sekundy -- wartości można zmienić
         if pygame.time.get_ticks() % 300 == 0:
-            self.game_speed *= 1.01
+            self.game_speed *= 1.05
+            self.player1.dx *= 1.05
+
 
     def update_characters(self):
         # update na ekranie pozycję gracza i przeszkód
@@ -146,7 +149,7 @@ class Map(GameScreen):
         if 135 > self.player1.x:
             # kolizja z lewej strony
             return [True, False]
-        elif self.player1.rect.left > 405: # or self.player1.rect.right > 490:
+        elif self.player1.rect.right > 465: # or self.player1.rect.left > 405
             # kolizja z prawej strony 
             return [False, True]
         # jeżeli brak kolizji
@@ -165,15 +168,21 @@ class Map(GameScreen):
 
     def add_obstacle(self):
         # dodaje przeszkodę we w miarę losowym momencie, nie może być póki co więcej niż 5 na ekranie
+        # sprawdza czy w miejscu gdzie ma się pojawić przeszkoda występuje już jakaś inna przeszkoda
         if random.randint(1, 100) % 97 == 0 and len(self.obstacles) < 5:
-            self.obstacles.append(Obstacle())        
+            obs = Obstacle()
+            for obstacle in self.obstacles:
+                if obs.rect.y <= obstacle.rect.y - 130 or obs.rect.x == obstacle.rect.x:
+                    del obs
+                    break
+            else:
+                self.obstacles.append(Obstacle())
+    
 
     def check_for_obs_collision(self) -> bool:
         # sprawdza czy występuje kolizja gracza z przeszkodą
-        # BARDZO NIEDOKŁADNA
         for obstacle in self.obstacles:
             if pygame.Rect.colliderect(obstacle.rect, self.player1.rect):
-                # self.game_over = True
                 return True
             
 
@@ -185,15 +194,16 @@ class Map(GameScreen):
     def display_characters(self):
         # wyświetla charactery    
         self.player1.display_character(self.screen)
+        
+        # debug:
         self.display_debug_rect()
-        # self.player1.display_player_turning(self.screen)
-        # self.obs.display_character(self.screen)
+        
         for obstacle in self.obstacles:
             obstacle.display_character(self.screen)
 
     def calculate_score(self):
-        self.score += int((pygame.time.get_ticks() * self.game_speed) // 1000)
-
+        # self.score += int((pygame.time.get_ticks() * self.game_speed**10) // 1000)
+        self.score += 1
 
 
     def is_game_over(self) -> bool:
