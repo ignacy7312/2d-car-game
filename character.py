@@ -109,7 +109,7 @@ class Obstacle(Character):
     """
 
     # lista przeszkód
-    obstacle_path_list = ['obstacle1.png', 'obstacle2.png', 'obstacle3.png', 'obstacle4.png']
+    obstacle_path_list = ['obstacle1.png', 'obstacle2.png', 'obstacle3.png', 'obstacle4.png', 'carcrash.png', 'pixelwire.png'] # drut wygląda brzydko
     obstacle_center_positions = settings.lanes_center_list
 
     def __init__(self):
@@ -139,3 +139,8 @@ class Obstacle(Character):
         self.y += self.dy * multiplier
         
     
+class StaticObstacle(Obstacle):
+    def __init__(self):
+        self.x, self.y = self.get_random_position()
+        super().__init__(self.x, self.y)
+        self.dy = 5 # wartość równa scrollowi mapy - wtedy wygląda jakby się nie ruszało

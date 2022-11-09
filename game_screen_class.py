@@ -169,7 +169,7 @@ class Map(GameScreen):
     def add_obstacle(self):
         # dodaje przeszkodę we w miarę losowym momencie, nie może być póki co więcej niż 5 na ekranie
         # sprawdza czy w miejscu gdzie ma się pojawić przeszkoda występuje już jakaś inna przeszkoda
-        if random.randint(1, 100) % 97 == 0 and len(self.obstacles) < 5:
+        if random.randint(1, 20) % 19 == 0 and len(self.obstacles) < 5:
             obs = Obstacle()
             for obstacle in self.obstacles:
                 if obs.rect.y <= obstacle.rect.y - 130 or obs.rect.x == obstacle.rect.x:
