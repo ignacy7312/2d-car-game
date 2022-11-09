@@ -21,7 +21,7 @@ class GameScreen():
         self.scroll = 0
         self.background = pygame.image.load('textures/tlogry.png').convert_alpha()
         # ile obrazkow ma byc w bufforze
-        self.tiles = math.ceil(self.w / self.background.get_height()) + 2
+        self.tiles = math.ceil(self.h / self.background.get_height()) + 2
         # print(self.tiles)
         
         
@@ -95,7 +95,6 @@ class Map(GameScreen):
         self.baner_rect = self.baner.get_rect(center = (self.w - 150, 300))
         self.game_speed = 1 
         self.player1 = Player(350,670) # wstępna pozycja
-        # self.obs = Obstacle() # powinna być lista przeszkód, ale to już dalszy etap
         self.obstacles = []
         self.game_over = True
         
@@ -124,15 +123,13 @@ class Map(GameScreen):
             self.game_speed *= 1.01
 
     def update_characters(self):
-        # funkcja updateująca pozycję na ekranie gracza i przeszkody
-        # w momencie kolizji ekran freezuje (wstępnie)
-        # print(self.game_speed)
+        # update na ekranie pozycję gracza i przeszkód
+        # oraz sprawdza kolizję 
+        # jeżeli wystąpi kolizja to game_over = True
         self.increase_speed()
         self.add_obstacle()
         self.game_over = self.check_for_obs_collision()
         
-        # self.obs.move()
-        # self.obs.rect.y = self.obs.y
         self.update_player()
         self.update_obstacles()
                 
@@ -167,8 +164,8 @@ class Map(GameScreen):
                     del obstacle
 
     def add_obstacle(self):
-        # dodaje przeszkodę we w miarę losowym momencie, nie może być póki co więcej niż 4 na ekranie
-        if random.randint(1, 100) % 97 == 0 and len(self.obstacles) < 4:
+        # dodaje przeszkodę we w miarę losowym momencie, nie może być póki co więcej niż 5 na ekranie
+        if random.randint(1, 100) % 97 == 0 and len(self.obstacles) < 5:
             self.obstacles.append(Obstacle())        
 
     def check_for_obs_collision(self) -> bool:

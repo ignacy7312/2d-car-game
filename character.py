@@ -123,7 +123,7 @@ class Obstacle(Character):
         # zwraca path do losowej przeszkody z listy przeszkód
         return 'textures/' + random.choice(Obstacle.obstacle_path_list)
 
-    def get_random_position(self):
+    def get_random_position(self) -> tuple(int, int):
         # zwróć losowe x i y z zakresu (zakres tymczasowy, nie liczyłem pikseli)
         # powinna raczej zwracać wartości z większym skokiem,
         # żeby nie było sytuacji, gdzie przeszkoda pojawia się np na linii oddzielającej pasy
