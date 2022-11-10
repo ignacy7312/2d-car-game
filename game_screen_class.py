@@ -57,7 +57,7 @@ class GameScreen():
 
 
 
-class MenuScreen(GameScreen):
+class GameOver(GameScreen):
     def __init__(self, w, h):
         super().__init__(w, h)
         self.font = pygame.font.Font("textures/font.ttf", 24)
@@ -73,6 +73,43 @@ class MenuScreen(GameScreen):
         score_txt_rect = score_txt.get_rect(center = (self.w//2, 200))
         self.screen.blit(score_txt, score_txt_rect)
 
+
+class Menu(GameScreen):
+    def __init__(self, w, h):
+        super().__init__(w, h)
+        self.garage_button = pygame.image.load('textures/buttons/butgarage').convert_alpha()
+        self.garage_button_rect = self.garage_button.get_rect(center = (300, 50))
+        self.start_button = pygame.image.load('textures/buttons/butsound').convert_alpha()
+        self.start_button_rect = self.start_button.get_rect(center = (300, 300))
+        self.sound_button = pygame.image.load('textures/buttons/butstart').convert_alpha()
+        self.sound_button_rect = self.sound_button.get_rect(center = (300, 550))
+
+
+    def display_menu_bg(self):
+        self.screen.fill('lightblue')
+
+    def display_buttons(self):
+        self.screen.blit(self.garage_button, self.garage_button_rect)
+        self.sceen.blit(self.start_button, self.start_button_rect)
+        self.screen.blit(self.sound_button, self.sound_button_rect)
+
+    def click_button(self):
+        if self.garage_button_rect.collidepoint(pygame.mouse.get_pos()):
+            pass
+        # tu powinien zmienić się stan maszyny stanów na garage
+        if self.start_button_rect.collidepoint(pygame.mouse.get_pos()):
+            pass
+        # tu powinien zmienić się stan maszyny stanów na game (powinna się zacząć gra)
+        if self.sound_button_rect.collidepoint(pygame.mouse.get_pos()):
+            pass # tu powinien zmienić się stan muzyki na off ale nie ma jeszcze muzyki
+        
+
+class Garage(GameScreen):
+    def __init__(self, w, h):
+        super().__init__(w, h)
+        
+    def display_garage(self):
+        self.screen.fill('brown')
 
 
 class Map(GameScreen):

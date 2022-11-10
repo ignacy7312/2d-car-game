@@ -1,7 +1,7 @@
 import pygame
 import random
 import settings
-
+import math
 
 class Character(pygame.sprite.Sprite):
     """
@@ -94,7 +94,22 @@ class Player(Character):
         print(self.rect.width, self.rect.height, self.dx)
     
     
+    # cztery punkty - cztery wierzchołki prostokąta obrócone o kąt wobec pivota - środka prostokąta
+    """def rotate_by_point(self, cx : int, cy : int, angle : float, point : list(int, int)):
+        s = math.sin(angle)
+        c = math.cos(angle)
+        point[0] -= cx
+        point[1] -= cy
+
+        # rotate point
+        xnew = point[0] * c - point[1] * s
+        ynew = point[0] * s + point[1] * c
         
+        point[0] = xnew + cx
+        point[1] = ynew + cy 
+        
+        return point"""
+
 
 class Obstacle(Character):
 
