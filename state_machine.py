@@ -1,5 +1,5 @@
 import pygame
-import enum
+from enum import Enum
 import settings
 import character
 import game_screen_class
@@ -7,135 +7,190 @@ import main
 
 
 
-class State(enum.Enum):
-    MENU = 1
-    GAME = 2
-    GAME_OVER = 3
-    GARAGE = 4
 
+"""
+Klasa GameState
+po niej dziedziczą wszystkie klasy odpowiedzialne za stany w całym programie:
+Menu, GameActive, GameOver, Garage
 
-class GameSate(main.Game):
-    def __init__(self):
-        super()
-        # początkowo jest się w menu
-        self.curr_state = State.MENU
-        self.curr_state_obj = MenuState()
+curr_state  - aktualny stan
+curr_state_obj - aktualny obiekt danego stanu
 
-    def change_state(self, next_state : State):
+Obiekt każdego stanu zajmuje się wykonywaniem akcji tego stanu
+"""
+
+class GameState():
+    
+    class State(Enum):
+        MENU = 1
+        GAME = 2
+        GAME_OVER = 3
+        GARAGE = 4
+    
+    
+    def __init__(self, w, h):
+        # początkowym stanem programu jest MENU
+        self.w = w
+        self.h = h
+        self.curr_state = GameState.State.MENU
+        self.curr_state_obj = None
+        self.game_active_obj = None
+        self.game_over_obj = None
+        self.garage_obj = None
+        self.menu_obj = None
+    
+    # obie medtody występują w każdej klasie stanu.
+    def handle(self): pass
+    def get_next_state(self): pass
+
+"""
+Klasa GameAgent zajmuje się przejściem między stanami w programie
+oraz wykonaniem akcji aktualnie obowiązującego stanu 
+
+także dziedziczy po GameState, zawiera obiekty wszystkich stanów
+
+"""
+class GameAgent(GameState):
+    def __init__(self, w, h):
+        super().__init__(w, h)
+        self.game_active_obj = GameActiveState(self.w, self.h)
+        self.game_over_obj = None
+        self.garage_obj = GarageState(self.w, self.h)
+        self.menu_obj = MenuState(self.w, self.h)
+        self.curr_state_obj = self.menu_obj # pierwotnym stanem jest menu
+
+    def change_state(self, next_state : GameState.State):
         # funckja przyjmuje jako argument kolejny stan, który ma nastąpić 
-        # i zmienia aktualny stan na obiekt tego stanu
-        if next_state == State.MENU:
-            self.curr_state_obj = MenuState()
-        if next_state == State.GAME:
-            self.curr_state_obj = GameActiveState()
-        if next_state == State.GAME_OVER:
-            self.curr_state_obj = GameOverState()
-        if next_state == State.GARAGE:
-            self.curr_state_obj = GarageState()
+        # i zmienia aktualny stan na kolejny
+        if next_state == GameState.State.MENU:
+            self.curr_state_obj = MenuState(self.w, self.h)
         
-    def handle_game_states(self):
+        if next_state == GameState.State.GAME:
+            self.curr_state_obj = GameActiveState(self.w, self.h)
+        
+        if next_state == GameState.State.GAME_OVER:
+            self.curr_state_obj = GameOverState(self.w, self.h, self.curr_state_obj.game_screen.score)
+            
+        if next_state == GameState.State.GARAGE:
+            self.curr_state_obj = GarageState(self.w, self.h)
+        
+    def execute(self):
+        # wykonanie akcji aktualnie obowiązującego stanu
         self.curr_state_obj.handle()
-        next_state = self.curr_state_obj.change_state()
+        # sprawdzenie, czy ma nastąpić zmiana stanu
+        self.change_state(self.curr_state_obj.get_next_state())
 
-        # jeżeli stan następny jest różny niż aktualny
-        if next_state != self.curr_state:
-            self.change_state(next_state)
 
-class GameActiveState(GameSate):
-    def __init__(self):
-        super()
-        self.game_screen = Map(self.w, self.h)
-        self.game_speed = None
-        self.game_over = None
+"""
+Klasa stanu Game Active (gdy jest się w trakcie gry)
+
+tworzy obiekt mapy, który zajmuje się całą logiką rozgrywki oraz sprawdza, 
+czy ma nastąpić przejście do kolejnego stanu. Ze stanu gry aktywnej mozna przejść jedynie do GameOver
+
+"""
+class GameActiveState(GameState):
+    def __init__(self, w, h):
+        super().__init__(w,h)
+        self.game_screen = game_screen_class.Map(self.w, self.h)
+        self.curr_state = GameState.State.GAME
+
 
     def handle(self):
+        # aktualizuje rozgrywkę
         self.game_screen.update_characters()
         self.game_screen.display_bg()
         self.game_screen.display_map_elements()
         self.game_screen.display_characters()
         self.game_screen.display_score()
         
-        self.change_to_game_over_from_game()
-
-    def change_state(self):
-        # zmień na game_over z game
-        if self.State == Game.State.GAME and self.game_over:
-            return Game.State.GAME_OVER
-
         
 
+    def get_next_state(self) -> GameState.State:
+        # jeżeli warunek zostaje spełniony, to zwraca kolejny stan - wtym wypadku tylko game over
+        if self.curr_state == GameState.State.GAME and self.game_screen.game_over:
+            return GameState.State.GAME_OVER
 
+    def reset(self):
+        # resetuje rozgrywkę tworząc obiekt mapy na nowo
+        self.game_screen = game_screen_class.Map(self.w, self.h)
+        
+        
+"""
+Klasa stanu GameOver
+tworzy obiekt ekranu GameOver
+
+Ze stanu GameOver można przejść do stanu Menu albo GameActive (rozpocząć rozgrywkę od nowa)
+
+jako argument przyjmuje także wynik uzyskany w poprzedniej grze
+"""
 class GameOverState(GameActiveState):
-    def __init__(self):
-        super()
-        self.game_over_screen = GameOverScreen(self.w, self.h) 
-        self.game_over = game_screen.is_game_over()
+    def __init__(self, w, h, score):
+        super().__init__(w, h)
+        self.game_over_screen = game_screen_class.GameOverScreen(self.w, self.h) 
+        self.curr_state = GameState.State.GAME_OVER
+        self.score =  score
         
     def handle(self):
-        # self.menu_screen.display_menu()
-        # self.menu_screen.display_score(self.game_screen.score)
-        self.game_over_screen.display_menu()
-        self.game_over_screen.display_score(self.game_screen.score)
-        self.change_to_game_from_game_over()
-        self.change_to_menu_from_game_over()
 
+        self.game_over_screen.display_bg()
+        self.game_over_screen.display_score(self.score)
+    
+        
 
-    def change_state(self):
-        # zmień na stan gry aktywnej gdy jest game_over
-        if self.State == Game.State.GAME_OVER and pygame.key.get_pressed()[pygame.K_SPACE]:
-            del self.game_screen
-            self.game_screen = Map(self.w, self.h)
-            self.game_screen.game_over = False
-            self.game_over = False
-            return Game.State.GAME
+    def get_next_state(self) -> GameState.State:
+        # rozpocznij grę na nowo
+        if self.curr_state == GameState.State.GAME_OVER and pygame.key.get_pressed()[pygame.K_SPACE]:
+            return GameState.State.GAME
 
-        # zmień na stan menu gdy jest game over
-        if self.State == Game.State.MENU and pygame.key.get_pressed()[pygame.K_ESCAPE]:
-            del self.game_screen
-            
-            return Game.State.MENU
+        #zmień na stan menu 
+        if self.curr_state == GameState.State.GAME_OVER and pygame.key.get_pressed()[pygame.K_m]:
+            return GameState.State.MENU
 
 
 
+"""
+Klasa stanu menu.
+Poki co nic nie robi oprócz wyświetlenia się i umożliwienia przejścia 
+do stanu gry aktywnej lub do garażu
 
-
-
-
-
-
-
-
-
-
+"""
 class MenuState(GameState):
-    def __init__(self):
-        super()
+    def __init__(self, w, h):
+        super().__init__(w, h)
+        self.curr_state = GameState.State.MENU
         self.menu_screen = game_screen_class.Menu(self.w, self.h)
+        
 
     def handle(self):
-        pass
+        self.menu_screen.display_menu_bg()
 
-    def change_state(self):
-        # zmień na grę aktywną z menu
-        if self.State == Game.State.MENU and pygame.key.get_pressed()[pygame.K_SPACE]:
-            return Game.State.GAME
+    def get_next_state(self) -> GameState.State:
+        # zmień na grę aktywną
+        if self.curr_state == GameState.State.MENU and pygame.key.get_pressed()[pygame.K_SPACE]:
+            return GameState.State.GAME
 
-        # zmień na garaż z menu
-        if self.STATE == Game.State.MENU and pygame.key.get_pressed()[pygame.K_l]:
-            return Game.State.GARAGE
+        # zmień na garaż
+        if self.curr_state == GameState.State.MENU and pygame.key.get_pressed()[pygame.K_ESCAPE]:
+            return GameState.State.GARAGE
         
         
+"""
+Klasa stanu garaż.
+Poki co nic nie robi oprócz wyświetlenia się i umożliwienia przejścia 
+z powrotem do menu
 
-
+"""
 class GarageState(GameState):
-    def __init__(self):
-        super()
+    def __init__(self, w, h):
+        super().__init__(w, h)
+        self.curr_state = GameState.State.GARAGE
         self.garage_screen = game_screen_class.Garage(self.w, self.h)
     
-    def handle(self):
-        pass    
 
-    def change_state(self):
-        # zmień na menu z garażu
-        if self.STATE == Game.State.GARAGE and pygame.key.get_pressed()[pygame.K_l]: 
-            return Game.State.MENU
+    def handle(self):
+        self.garage_screen.display_garage() 
+
+    def get_next_state(self) -> GameState.State:
+        # zmień na menu
+        if self.curr_state == GameState.State.GARAGE and pygame.key.get_pressed()[pygame.K_m]: 
+            return GameState.State.MENU

@@ -6,14 +6,17 @@ import pygame
 
 class GameScreen():
 
+
     """
     Klasa po któej dziedziczyć będą pozostałe ekrany, tj Mapa, Garaż czy Menu/Options
 
     w,h - rozdzielczość ekranu
     screen - odpalenie pokazywania ekranu w pygame
 
-    
+    self.font = pygame.font.Font("textures/font.ttf", 24)
     """
+    
+    
     def __init__(self, w, h):
         self.w = w
         self.h = h
@@ -22,10 +25,69 @@ class GameScreen():
         self.background = pygame.image.load('textures/tlogry.png').convert_alpha()
         # ile obrazkow ma byc w bufforze
         self.tiles = math.ceil(self.h / self.background.get_height()) + 2
-        # print(self.tiles)
+        self.font = pygame.font.Font("textures/font.ttf", 24)
+        
+
+    
+
+    def rescale_background(self):
+        self.background = pygame.transform.scale(self.background, (self.w, self.h)) 
         
         
 
+
+
+class GameOverScreen(GameScreen):
+    def __init__(self, w, h):
+        super().__init__(w, h)
+        
+        self.text1 = self.font.render("press SPACE to start", True, 'black')
+        self.text_rect1 = self.text1.get_rect(center = (self.w//2, self.h//2))
+        self.text2 = self.font.render("press m to go back to menu", True, 'black')
+        self.text_rect2 = self.text2.get_rect(center = (self.w//2, self.h//2 + 200))
+
+    def display_bg(self):
+        self.screen.fill('white')
+        self.screen.blit(self.text1, self.text_rect1)
+        self.screen.blit(self.text2, self.text_rect2)
+        
+        
+    def display_score(self, score):
+        score_txt = self.font.render(f'score: {score}', True, 'black')
+        score_txt_rect = score_txt.get_rect(center = (self.w//2, 200))
+        self.screen.blit(score_txt, score_txt_rect)
+
+
+
+
+class Map(GameScreen):
+
+    """
+    Klasa mapy
+
+    
+    player1 - gracz
+    obs - przeszkoda
+    game_speed - prędkość gry
+    baner - element mapy, kierunek wyspa słodowa
+    """
+
+    def __init__(self, w, h):
+        super().__init__(w, h)
+        self.font = pygame.font.Font("textures/font.ttf", 16)
+        self.baner = pygame.image.load('textures/baner.png').convert_alpha()
+        self.baner = pygame.transform.rotozoom(self.baner, 0, 0.30) # powinna być na to funkcja
+        # i ogólnie elementy mapy pewnie powinny być w jakiejś liście
+        self.baner_rect = self.baner.get_rect(center = (self.w - 150, 300))
+        self.game_speed = 1 
+        self.player1 = Player(350,670) # wstępna pozycja
+        self.obstacles = []
+
+        self.game_over = False
+        
+        self.score = 0
+        
+        
     def display_bg(self):
         # wyświetl tło 
         #self.background = pygame.transform.scale(self.background, (self.w, self.h))
@@ -43,102 +105,6 @@ class GameScreen():
             self.scroll = 0
         
 
-        '''# self.screen.blit(self.car, self.car_rect)
-        # self.screen.blit(self.baner, self.baner_rect)
-        rescale_background()
-        pygame.display.update()'''
-
-
-    def rescale_background(self):
-        self.background = pygame.transform.scale(self.background, (self.w, self.h)) 
-        
-        #self.baner = pygame.transform.rotozoom(self.baner,0,self.car_scale)
-        #self.baner_rect = self.baner.get_rect(center =(self.w - 250, self.h - 450))
-
-
-
-class GameOverScreen(GameScreen):
-    def __init__(self, w, h):
-        super().__init__(w, h)
-        self.font = pygame.font.Font("textures/font.ttf", 24)
-        self.text = self.font.render("press SPACE to start", True, 'black')
-        self.text_rect = self.text.get_rect(center = (self.w//2, self.h//2))
-
-    def display_menu(self):
-        self.screen.fill('white')
-        self.screen.blit(self.text, self.text_rect)
-        
-    def display_score(self, score):
-        score_txt = self.font.render(f'score: {score}', True, 'black')
-        score_txt_rect = score_txt.get_rect(center = (self.w//2, 200))
-        self.screen.blit(score_txt, score_txt_rect)
-
-
-class Menu(GameScreen):
-    def __init__(self, w, h):
-        super().__init__(w, h)
-        self.garage_button = pygame.image.load('textures/buttons/butgarage').convert_alpha()
-        self.garage_button_rect = self.garage_button.get_rect(center = (300, 50))
-        self.start_button = pygame.image.load('textures/buttons/butsound').convert_alpha()
-        self.start_button_rect = self.start_button.get_rect(center = (300, 300))
-        self.sound_button = pygame.image.load('textures/buttons/butstart').convert_alpha()
-        self.sound_button_rect = self.sound_button.get_rect(center = (300, 550))
-
-
-    def display_menu_bg(self):
-        self.screen.fill('lightblue')
-
-    def display_buttons(self):
-        self.screen.blit(self.garage_button, self.garage_button_rect)
-        self.sceen.blit(self.start_button, self.start_button_rect)
-        self.screen.blit(self.sound_button, self.sound_button_rect)
-
-    def click_button(self):
-        if self.garage_button_rect.collidepoint(pygame.mouse.get_pos()):
-            pass
-        # tu powinien zmienić się stan maszyny stanów na garage
-        if self.start_button_rect.collidepoint(pygame.mouse.get_pos()):
-            pass
-        # tu powinien zmienić się stan maszyny stanów na game (powinna się zacząć gra)
-        if self.sound_button_rect.collidepoint(pygame.mouse.get_pos()):
-            pass # tu powinien zmienić się stan muzyki na off ale nie ma jeszcze muzyki
-        
-
-class Garage(GameScreen):
-    def __init__(self, w, h):
-        super().__init__(w, h)
-        
-    def display_garage(self):
-        self.screen.fill('brown')
-
-
-class Map(GameScreen):
-
-    """
-    Klasa mapy
-
-    
-    player1 - gracz
-    obs - przeszkoda
-    game_speed - prędkość gry
-    baner - element mapy, kierunek wyspa słodowa
-    """
-
-    def __init__(self, w, h):
-        super().__init__(w, h)
-        self.baner = pygame.image.load('textures/baner.png').convert_alpha()
-        self.baner = pygame.transform.rotozoom(self.baner, 0, 0.30) # powinna być na to funkcja, ale już mi się nie chce
-        # i ogólnie elementy mapy pewnie powinny być w jakiejś liście
-        self.baner_rect = self.baner.get_rect(center = (self.w - 150, 300))
-        self.game_speed = 1 
-        self.player1 = Player(350,670) # wstępna pozycja
-        self.obstacles = []
-
-        self.game_over = True
-        
-        self.score = 0
-        self.font = pygame.font.Font("textures/font.ttf", 16)
-        
 
     # -------------DEBUG------------------------
     def display_debug_rect(self):
@@ -211,10 +177,13 @@ class Map(GameScreen):
                 obs = StaticObstacle()
             else:
                 obs = DynamicObstacle()
+            collides = False
             for obstacle in self.obstacles:
                 if obs.rect.y <= obstacle.rect.y - 130 or obs.rect.x == obstacle.rect.x:
-                    del obs
+                    collides = True
                     break
+            if collides:
+                del obs    
             else:
                 self.obstacles.append(obs)
     
@@ -224,6 +193,7 @@ class Map(GameScreen):
         for obstacle in self.obstacles:
             if pygame.Rect.colliderect(obstacle.rect, self.player1.rect):
                 return True
+        return False
             
 
     def display_map_elements(self):
@@ -248,6 +218,60 @@ class Map(GameScreen):
 
     def is_game_over(self) -> bool:
         return self.game_over
+
+
+
+
+
+class Menu(GameScreen):
+    def __init__(self, w, h):
+        super().__init__(w, h)
+        # self.garage_button = pygame.image.load('textures/buttons/butgarage').convert_alpha()
+        # self.garage_button_rect = self.garage_button.get_rect(center = (300, 50))
+        # self.start_button = pygame.image.load('textures/buttons/butsound').convert_alpha()
+        # self.start_button_rect = self.start_button.get_rect(center = (300, 300))
+        # self.sound_button = pygame.image.load('textures/buttons/butstart').convert_alpha()
+        # self.sound_button_rect = self.sound_button.get_rect(center = (300, 550))
+
+        
+        self.text1 = self.font.render("press SPACE to start", True, 'black')
+        self.text_rect1 = self.text1.get_rect(center = (self.w//2, self.h//2))
+        self.text2 = self.font.render("press ESC to go to the garage", True, 'black')
+        self.text_rect2 = self.text2.get_rect(center = (self.w//2, self.h//2 - 200))
+
+        
+
+    def display_menu_bg(self):
+        self.screen.fill('lightblue')
+        self.screen.blit(self.text1, self.text_rect1)
+        self.screen.blit(self.text2, self.text_rect2)
+
+    def display_buttons(self):
+        self.screen.blit(self.garage_button, self.garage_button_rect)
+        self.sceen.blit(self.start_button, self.start_button_rect)
+        self.screen.blit(self.sound_button, self.sound_button_rect)
+
+    def click_button(self):
+        if self.garage_button_rect.collidepoint(pygame.mouse.get_pos()):
+            pass
+        # tu powinien zmienić się stan maszyny stanów na garage
+        if self.start_button_rect.collidepoint(pygame.mouse.get_pos()):
+            pass
+        # tu powinien zmienić się stan maszyny stanów na game (powinna się zacząć gra)
+        if self.sound_button_rect.collidepoint(pygame.mouse.get_pos()):
+            pass # tu powinien zmienić się stan muzyki na off ale nie ma jeszcze muzyki
+        
+
+class Garage(GameScreen):
+    def __init__(self, w, h):
+        super().__init__(w, h)
+        self.text1 = self.font.render("press m to go back to menu", True, 'black')
+        self.text_rect1 = self.text1.get_rect(center = (self.w//2, self.h//2))
+        
+    def display_garage(self):
+        self.screen.fill('brown')
+        self.screen.blit(self.text1, self.text_rect1)
+
 
 
 

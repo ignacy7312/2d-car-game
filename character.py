@@ -140,7 +140,7 @@ class Obstacle(Character):
         # na wysokości ponad ekranem, żeby był efekt wyjechania przeszkody na ekran,
         # a nie że po prostu się losowo pojawia 
         
-        return random.choice(Obstacle.obstacle_center_positions), random.randint(-200, 0)
+        return random.choice(Obstacle.obstacle_center_positions), random.randint(-400, 0)
 
 
 

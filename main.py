@@ -3,9 +3,10 @@ import pygame
 from game_screen_class import *
 from sys import exit
 import enum
+import state_machine
 
 class Game:
-
+    
     """
     Główna klasa gry
     w,h - rozdzielczość ekranu
@@ -13,59 +14,26 @@ class Game:
     """
     pygame.init()
     pygame.display.set_caption('HIGH RIDE')
-    
-   
-    
+
+
     def __init__(self, w: int, h: int, fps: int):
         self.w = w
         self.h = h
         self.fps = fps
         self.clock = pygame.time.Clock()
-        self.game_speed = None
-        self.game_over = None
-        # po wejsciu do gry jest sie w menu
-        self.map_screen = None
-        self.garage_screen = None
-        self.game_over_screen = None
-        self.menu_screen = None
+        self.game_agent = state_machine.GameAgent(self.w, self.h)
         
-    
 
     def run(self):
         # odpala game loop
-
-        # obiekt mapy: 
-        game_screen = Map(self.w, self.h) 
-        # obiekt prowizorycznego menu
-        game_over_screen = GameOverScreen(self.w, self.h) 
-        self.game_over = game_screen.is_game_over()
-
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
+
+            self.game_agent.execute()
             
-            # czy game_over
-            self.game_over = game_screen.is_game_over()
-        
-            if not self.game_over:
-                game_screen.update_characters()
-                game_screen.display_bg()
-                game_screen.display_map_elements()
-                game_screen.display_characters()
-                game_screen.display_score()
-
-            if self.game_over:
-                # kiedy się przegra - poki co jedna kolizja z przeszkodą
-                game_over_screen.display_menu()
-                game_over_screen.display_score(game_screen.score)
-                if pygame.key.get_pressed()[pygame.K_SPACE]:
-                    del game_screen
-                    game_screen = Map(self.w, self.h)
-                    game_screen.game_over = False
-
-
             pygame.display.update()
             self.clock.tick(self.fps)
 
