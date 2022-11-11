@@ -57,7 +57,7 @@ class GameScreen():
 
 
 
-class GameOver(GameScreen):
+class GameOverScreen(GameScreen):
     def __init__(self, w, h):
         super().__init__(w, h)
         self.font = pygame.font.Font("textures/font.ttf", 24)

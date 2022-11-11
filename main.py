@@ -14,12 +14,7 @@ class Game:
     pygame.init()
     pygame.display.set_caption('HIGH RIDE')
     
-    class State(enum.Enum):
-        MENU = 1
-        GAME = 2
-        GAME_OVER = 3
-        GARAGE = 4
-    
+   
     
     def __init__(self, w: int, h: int, fps: int):
         self.w = w
@@ -29,70 +24,11 @@ class Game:
         self.game_speed = None
         self.game_over = None
         # po wejsciu do gry jest sie w menu
-        self.STATE = Game.State.MENU 
         self.map_screen = None
         self.garage_screen = None
         self.game_over_screen = None
         self.menu_screen = None
         
-    def change_state(self):
-        # jakas akcja która pozwala zmienić stan - maszyna stanów
-        self.change_to_game_from_menu()
-        pass
-        
-    def change_to_game_from_menu(self):
-        if self.State == Game.State.MENU and pygame.key.get_pressed()[pygame.K_SPACE]:
-            self.State = Game.State.GAME
-        
-    def change_to_game_from_game_over(self):
-        if self.State == Game.State.GAME_OVER and pygame.key.get_pressed()[pygame.K_SPACE]:
-            del self.game_screen
-            self.game_screen = Map(self.w, self.h)
-            self.game_screen.game_over = False
-            self.game_over = False
-            self.State = Game.State.GAME
-    
-    def change_to_garage_from_menu(self):
-        if self.STATE == Game.State.MENU and pygame.key.get_pressed()[pygame.K_l]:
-            self.STATE = Game.State.GARAGE
-    
-    def change_to_menu_from_garage(self):
-        if self.STATE == Game.State.GARAGE and pygame.key.get_pressed()[pygame.K_l]: 
-            self.STATE = Game.State.MENU
-        
-    def change_to_menu_from_game_over(self):
-        if self.State == Game.State.MENU and pygame.key.get_pressed()[pygame.K_ESCAPE]:
-            self.STATE = Game.State.MENU
-            
-    def change_to_game_over_from_game(self):
-        if self.State == Game.State.GAME and self.game_over:
-            self.STATE = Game.State.GAME_OVER
-
-    def handle_states(self):
-        pass
-    
-    def handle_game_state(self):
-        self.game_screen.update_characters()
-        self.game_screen.display_bg()
-        self.game_screen.display_map_elements()
-        self.game_screen.display_characters()
-        self.game_screen.display_score()
-        
-        self.change_to_game_over_from_game()
-    
-    def handle_game_over_state(self):
-        self.menu_screen.display_menu()
-        self.menu_screen.display_score(self.game_screen.score)
-        self.change_to_game_from_game_over()
-        self.change_to_menu_from_game_over()
-            
-            
-    
-    def handle_menu_state(self):
-        pass
-    
-    def handle_garage_state(self):
-        pass    
     
 
     def run(self):
@@ -101,7 +37,7 @@ class Game:
         # obiekt mapy: 
         game_screen = Map(self.w, self.h) 
         # obiekt prowizorycznego menu
-        game_over_screen = GameOver(self.w, self.h) 
+        game_over_screen = GameOverScreen(self.w, self.h) 
         self.game_over = game_screen.is_game_over()
 
         while True:
