@@ -98,18 +98,29 @@ class Map(GameScreen):
         # self.obs = Obstacle() # powinna być lista przeszkód, ale to już dalszy etap
         self.obstacles = []
         self.game_over = True
-        
         self.score = 0
         self.font = pygame.font.Font("textures/font.ttf", 16)
-        
+        #dodawanie serduszek oraz ich skalowanie, myśle że można to gdzies przenieść w dyskretne miejsce żeby oczy nie bolały
+        self.hp1 = pygame.image.load('textures/serce.png').convert_alpha()
+        self.hp2 = pygame.image.load('textures/serce.png').convert_alpha()
+        self.hp3 = pygame.image.load('textures/serce.png').convert_alpha()
+        self.hp1_rect = self.hp1.get_rect(center=(self.w + 5, self.h - 670))
+        self.hp2_rect = self.hp2.get_rect(center=(self.w + 45, self.h - 670))
+        self.hp3_rect = self.hp3.get_rect(center=(self.w + 85, self.h - 670))
+        self.hp1 = pygame.transform.rotozoom(self.hp1, 0, 0.15)
+        self.hp2 = pygame.transform.rotozoom(self.hp2, 0, 0.15)
+        self.hp3 = pygame.transform.rotozoom(self.hp3, 0, 0.15)
 
+        '''
+        self.hp1 = pygame.transform.scale_by(hp1,settings.car_rescale[1])
+        self.hp2 = pygame.transform.scale_by(hp2,settings.car_rescale[1])
+        self.hp3 = pygame.transform.scale_by(hp3,settings.car_rescale[1])
+            '''
     # -------------DEBUG------------------------
     def display_debug_rect(self):
         pygame.draw.rect(self.screen, 'green', self.player1.rect, 2)
         for obstacle in self.obstacles:
             pygame.draw.rect(self.screen, 'blue', obstacle.rect, 2)
-
-
 
 
     def display_score(self):
@@ -141,7 +152,14 @@ class Map(GameScreen):
         if self.check_for_border_collision():
             self.player1.move(self.check_for_border_collision())
             self.player1.rect.x = self.player1.x   
-            
+    def show_life(self):
+        self.screen.blit(self.hp1,self.hp1_rect)
+        self.screen.blit(self.hp2, self.hp2_rect)
+        self.screen.blit(self.hp3, self.hp3_rect)
+
+
+
+
     def check_for_border_collision(self) -> list[bool, bool]:
         # zwraca kolizję z granicą w postaci dwuelementowej listy
         # w któej idx 0 oznacza kolizję z lewą granicą drogi, a idx 1 oznacza kolizję z prawą granicą drogi
@@ -176,13 +194,16 @@ class Map(GameScreen):
         # BARDZO NIEDOKŁADNA
         for obstacle in self.obstacles:
             if pygame.Rect.colliderect(obstacle.rect, self.player1.rect):
+                self.player1.hp-=1
+                self.obstacles.remove(obstacle)
                 # self.game_over = True
-                return True
+                return self.checking_hp()
             
 
     def display_map_elements(self):
         # wyświetla elementy mapy, takie jak np. baner
         self.screen.blit(self.baner, self.baner_rect)
+
 
 
     def display_characters(self):
@@ -203,8 +224,26 @@ class Map(GameScreen):
         return self.game_over
 
 
-    def save_highscore(self):
-        self.highscore_file =
+    def checking_hp(self) -> bool:
+
+        if(self.player1.hp==2):
+            print('2')
+            self.hp1 = pygame.image.load('textures/kosa.png').convert_alpha()
+            self.hp1_rect = self.hp1.get_rect(center=(self.w - 80, self.h - 750))
+            self.hp1 = pygame.transform.rotozoom(self.hp1, 0, 0.40)
+            return False
+        elif(self.player1.hp==1):
+            print('1')
+            self.hp2 = pygame.image.load('textures/kosa.png').convert_alpha()
+            self.hp2_rect = self.hp2.get_rect(center=(self.w - 40, self.h - 750))
+            self.hp2 = pygame.transform.rotozoom(self.hp2, 0, 0.40)
+            return False
+        elif(self.player1.hp==0):
+            self.hp3 = pygame.image.load('textures/kosa.png').convert_alpha()
+            self.hp3_rect = self.hp3.get_rect(center=(self.w , self.h - 750))
+            self.hp3 = pygame.transform.rotozoom(self.hp3, 0, 0.40)
+            print('deat')
+            return True
 
 
 

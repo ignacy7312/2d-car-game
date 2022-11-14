@@ -47,6 +47,7 @@ class Game:
                 game_screen.display_map_elements()
                 game_screen.display_characters()
                 game_screen.display_score()
+                game_screen.show_life()
 
             if self.game_over:
                 # kiedy się przegra - poki co jedna kolizja z przeszkodą
