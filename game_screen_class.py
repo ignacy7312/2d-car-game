@@ -86,6 +86,17 @@ class Map(GameScreen):
         self.game_over = False
         
         self.score = 0
+
+        # dodawanie serduszek oraz ich skalowanie, myśle że można to gdzies przenieść w dyskretne miejsce żeby oczy nie bolały
+        self.hp1 = pygame.image.load('textures/serce.png').convert_alpha()
+        self.hp2 = pygame.image.load('textures/serce.png').convert_alpha()
+        self.hp3 = pygame.image.load('textures/serce.png').convert_alpha()
+        self.hp1_rect = self.hp1.get_rect(center=(self.w + 5, self.h - 670))
+        self.hp2_rect = self.hp2.get_rect(center=(self.w + 45, self.h - 670))
+        self.hp3_rect = self.hp3.get_rect(center=(self.w + 85, self.h - 670))
+        self.hp1 = pygame.transform.rotozoom(self.hp1, 0, 0.15)
+        self.hp2 = pygame.transform.rotozoom(self.hp2, 0, 0.15)
+        self.hp3 = pygame.transform.rotozoom(self.hp3, 0, 0.15)
         
         
     def display_bg(self):
@@ -192,7 +203,11 @@ class Map(GameScreen):
         # sprawdza czy występuje kolizja gracza z przeszkodą
         for obstacle in self.obstacles:
             if pygame.Rect.colliderect(obstacle.rect, self.player1.rect):
-                return True
+                self.player1.hp -= 1
+                self.obstacles.remove(obstacle)
+                # self.game_over = True
+                return self.checking_hp()
+
         return False
             
 
@@ -219,8 +234,30 @@ class Map(GameScreen):
     def is_game_over(self) -> bool:
         return self.game_over
 
+    def checking_hp(self) -> bool:
+        if (self.player1.hp == 2):
+            print('2')
+            self.hp1 = pygame.image.load('textures/kosa.png').convert_alpha()
+            self.hp1_rect = self.hp1.get_rect(center=(self.w - 80, self.h - 750))
+            self.hp1 = pygame.transform.rotozoom(self.hp1, 0, 0.40)
+            return False
+        elif (self.player1.hp == 1):
+            print('1')
+            self.hp2 = pygame.image.load('textures/kosa.png').convert_alpha()
+            self.hp2_rect = self.hp2.get_rect(center=(self.w - 40, self.h - 750))
+            self.hp2 = pygame.transform.rotozoom(self.hp2, 0, 0.40)
+            return False
+        elif (self.player1.hp == 0):
+            self.hp3 = pygame.image.load('textures/kosa.png').convert_alpha()
+            self.hp3_rect = self.hp3.get_rect(center=(self.w, self.h - 750))
+            self.hp3 = pygame.transform.rotozoom(self.hp3, 0, 0.40)
+            print('deat')
+            return True
 
-
+    def show_life(self):
+        self.screen.blit(self.hp1, self.hp1_rect)
+        self.screen.blit(self.hp2, self.hp2_rect)
+        self.screen.blit(self.hp3, self.hp3_rect)
 
 
 class Menu(GameScreen):
@@ -260,7 +297,8 @@ class Menu(GameScreen):
         # tu powinien zmienić się stan maszyny stanów na game (powinna się zacząć gra)
         if self.sound_button_rect.collidepoint(pygame.mouse.get_pos()):
             pass # tu powinien zmienić się stan muzyki na off ale nie ma jeszcze muzyki
-        
+
+
 
 class Garage(GameScreen):
     def __init__(self, w, h):

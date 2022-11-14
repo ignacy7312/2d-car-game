@@ -102,6 +102,7 @@ class GameActiveState(GameState):
         self.game_screen.display_map_elements()
         self.game_screen.display_characters()
         self.game_screen.display_score()
+        self.game_screen.show_life()
         
         
 
