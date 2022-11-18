@@ -1,19 +1,20 @@
-edit 11.10
-na przyszły tydzień zrobić model programu - rozpisać klasy i obiekty
+na kolejne zaj 20ktorys: 
 
-zrobić folder docs i korzystać z diagrams.net
+## wazne
 
-
-klasa gra 
-plik settings
-klasa ekran
-klasa auto:
-własności
-metody
-klasa ekran
-klasa mapa:
-obiekt miasto itp
+- monety 
+- sqlite 
+- skrypt na zrobinie umla z kodu 
+- ogarnąć gita tak żeby main działał i wyjebać useless branche 
+- przyciski -> myszka
+- zoptymalizowac spawn obstacle/monety
 
 
-rodział na mechanikę gry logikę i grafikę 
-+ kilka rysunków jak ma wyglądać ekran
+## kosmetyczne
+- przesuwanie sie elementów tła i dodać jakieś losowe
+- zrobić fajniejsze liczenie score 
+- zoptymalizować spawn przeszkód 
+- dodac miganie auta po zderzeniu z przeszkoda
+- dodać muzykę i efekty dźwiękowe? 
+- wyjazd auta jako start
+- game over jako sfreezowany ekran mapy?

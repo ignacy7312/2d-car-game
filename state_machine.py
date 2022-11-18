@@ -1,11 +1,8 @@
 import pygame
 from enum import Enum
+
 import settings
-import character
-import game_screen_class
-import main
-
-
+from screen import menu_module, garage_module, game_over_module, map_module
 
 
 """
@@ -69,12 +66,13 @@ class GameAgent(GameState):
             self.curr_state_obj = GameActiveState(self.w, self.h)
         
         if next_state == GameState.State.GAME_OVER:
-            self.curr_state_obj = GameOverState(self.w, self.h, self.curr_state_obj.game_screen.score)
+            self.curr_state_obj = GameOverState(self.w, self.h, self.curr_state_obj.game_screen.score,
+                                                    self.curr_state_obj.game_screen.player1.game_money)
             
         if next_state == GameState.State.GARAGE:
             self.curr_state_obj = GarageState(self.w, self.h)
         
-    def execute(self):
+    def execute(self):  
         # wykonanie akcji aktualnie obowiązującego stanu
         self.curr_state_obj.handle()
         # sprawdzenie, czy ma nastąpić zmiana stanu
@@ -91,7 +89,7 @@ czy ma nastąpić przejście do kolejnego stanu. Ze stanu gry aktywnej mozna prz
 class GameActiveState(GameState):
     def __init__(self, w, h):
         super().__init__(w,h)
-        self.game_screen = game_screen_class.Map(self.w, self.h)
+        self.game_screen = map_module.Map(self.w, self.h)
         self.curr_state = GameState.State.GAME
 
 
@@ -101,7 +99,7 @@ class GameActiveState(GameState):
         self.game_screen.display_bg()
         self.game_screen.display_map_elements()
         self.game_screen.display_characters()
-        self.game_screen.display_score()
+        self.game_screen.display_score_and_money()
         self.game_screen.show_life()
         
         
@@ -113,7 +111,7 @@ class GameActiveState(GameState):
 
     def reset(self):
         # resetuje rozgrywkę tworząc obiekt mapy na nowo
-        self.game_screen = game_screen_class.Map(self.w, self.h)
+        self.game_screen = map_module.Map(self.w, self.h)
         
         
 """
@@ -125,16 +123,18 @@ Ze stanu GameOver można przejść do stanu Menu albo GameActive (rozpocząć ro
 jako argument przyjmuje także wynik uzyskany w poprzedniej grze
 """
 class GameOverState(GameActiveState):
-    def __init__(self, w, h, score):
+    def __init__(self, w, h, score, money):
         super().__init__(w, h)
-        self.game_over_screen = game_screen_class.GameOverScreen(self.w, self.h) 
+        self.game_over_screen = game_over_module.GameOverScreen(self.w, self.h) 
         self.curr_state = GameState.State.GAME_OVER
-        self.score =  score
+        self.score = score
+        self.money = money
         
     def handle(self):
 
         self.game_over_screen.display_bg()
         self.game_over_screen.display_score(self.score)
+        self.game_over_screen.display_money_earned(self.money)
     
         
 
@@ -159,7 +159,7 @@ class MenuState(GameState):
     def __init__(self, w, h):
         super().__init__(w, h)
         self.curr_state = GameState.State.MENU
-        self.menu_screen = game_screen_class.Menu(self.w, self.h)
+        self.menu_screen = menu_module.Menu(self.w, self.h)
         
 
     def handle(self):
@@ -185,7 +185,7 @@ class GarageState(GameState):
     def __init__(self, w, h):
         super().__init__(w, h)
         self.curr_state = GameState.State.GARAGE
-        self.garage_screen = game_screen_class.Garage(self.w, self.h)
+        self.garage_screen = garage_module.Garage(self.w, self.h)
     
 
     def handle(self):
