@@ -56,6 +56,11 @@ class Player(Character):
             self.rect = self.normal_rect
 
         
+    def blink(self):
+        # miganie gracza chwilę po tym jak zderzy się z przeszkodą
+        # powinien być jeszcze okres invincible
+        pass
+        
         # print(self.rect.width, self.rect.height, self.dx)
     
     

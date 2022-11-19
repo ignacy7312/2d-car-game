@@ -96,7 +96,7 @@ class Map(GameScreen):
         
     def increase_speed(self):
         # przyspiesz grę co 3 sekundy -- wartości można zmienić
-        if pygame.time.get_ticks() % 300 == 0:
+        if pygame.time.get_ticks() % 3000 == 0:
             self.game_speed *= 1.01
             self.player1.dx *= 1.01
 
@@ -108,6 +108,8 @@ class Map(GameScreen):
         self.increase_speed()
         self.add_obstacle()
         self.add_coin()
+        
+        # ta funkcja zwraca true jezeli gracz straci hp i gra ma sie skonczyc 
         self.game_over = self.check_for_obs_collision()
         
         
@@ -206,7 +208,8 @@ class Map(GameScreen):
                 self.obstacles.remove(obstacle)
                 del obstacle
                 
-                # self.game_over = True
+                # zwraca funkcję sprawdzającą hp, która zwraca True jeżeli HP == 0,
+                # czyli ta funkcja zwroci True jezeli gracz straci hp - gra ma sie skonczyc
                 return self.checking_hp()
 
         return False
