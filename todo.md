@@ -6,6 +6,7 @@ na kolejne zaj 20ktorys:
 - sqlite 
 - skrypt na zrobinie umla z kodu 
 - ogarnąć gita tak żeby main działał i wyjebać useless branche 
+- GITIGNORE - pycache
 - przyciski -> myszka
 - zoptymalizowac spawn obstacle/monety
 

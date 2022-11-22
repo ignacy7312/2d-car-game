@@ -9,12 +9,12 @@ from screen.game_screen_class import GameScreen
 class Menu(GameScreen):
     def __init__(self, w, h):
         super().__init__(w, h)
-        # self.garage_button = pygame.image.load('textures/buttons/butgarage').convert_alpha()
-        # self.garage_button_rect = self.garage_button.get_rect(center = (300, 50))
-        # self.start_button = pygame.image.load('textures/buttons/butsound').convert_alpha()
-        # self.start_button_rect = self.start_button.get_rect(center = (300, 300))
-        # self.sound_button = pygame.image.load('textures/buttons/butstart').convert_alpha()
-        # self.sound_button_rect = self.sound_button.get_rect(center = (300, 550))
+        self.garage_button = pygame.image.load('textures/buttons/bgr.png').convert_alpha()
+        self.garage_button_rect = self.garage_button.get_rect(center = (300, 650))
+        self.start_button = pygame.image.load('textures/buttons/butsound.png').convert_alpha()
+        self.start_button_rect = self.start_button.get_rect(center = (300, 300))
+        self.sound_button = pygame.image.load('textures/buttons/butstart.png').convert_alpha()
+        self.sound_button_rect = self.sound_button.get_rect(center = (300, 550))
 
         
         self.text1 = self.font.render("press SPACE to start", True, 'black')
@@ -31,7 +31,7 @@ class Menu(GameScreen):
 
     def display_buttons(self):
         self.screen.blit(self.garage_button, self.garage_button_rect)
-        self.sceen.blit(self.start_button, self.start_button_rect)
+        self.screen.blit(self.start_button, self.start_button_rect)
         self.screen.blit(self.sound_button, self.sound_button_rect)
 
     def click_button(self):

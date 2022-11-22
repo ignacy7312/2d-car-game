@@ -164,6 +164,7 @@ class MenuState(GameState):
 
     def handle(self):
         self.menu_screen.display_menu_bg()
+        self.menu_screen.display_buttons()
 
     def get_next_state(self) -> GameState.State:
         # zmień na grę aktywną
