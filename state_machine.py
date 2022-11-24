@@ -108,6 +108,7 @@ class GameActiveState(GameState):
         # jeżeli warunek zostaje spełniony, to zwraca kolejny stan - wtym wypadku tylko game over
         if self.curr_state == GameState.State.GAME and self.game_screen.game_over:
             return GameState.State.GAME_OVER
+        return None
 
     def reset(self):
         # resetuje rozgrywkę tworząc obiekt mapy na nowo
@@ -146,7 +147,7 @@ class GameOverState(GameActiveState):
         #zmień na stan menu 
         if self.curr_state == GameState.State.GAME_OVER and pygame.key.get_pressed()[pygame.K_m]:
             return GameState.State.MENU
-
+        return None
 
 
 """
@@ -165,16 +166,18 @@ class MenuState(GameState):
     def handle(self):
         self.menu_screen.display_menu_bg()
         self.menu_screen.display_buttons()
+        
 
     def get_next_state(self) -> GameState.State:
         # zmień na grę aktywną
-        if self.curr_state == GameState.State.MENU and pygame.key.get_pressed()[pygame.K_SPACE]:
+        if self.curr_state == GameState.State.MENU and (self.menu_screen.click_button() == 2 or pygame.key.get_pressed()[pygame.K_SPACE]):
             return GameState.State.GAME
 
         # zmień na garaż
-        if self.curr_state == GameState.State.MENU and pygame.key.get_pressed()[pygame.K_ESCAPE]:
+        if self.curr_state == GameState.State.MENU and self.menu_screen.click_button() == 4:
             return GameState.State.GARAGE
         
+        return None
         
 """
 Klasa stanu garaż.
@@ -190,9 +193,13 @@ class GarageState(GameState):
     
 
     def handle(self):
-        self.garage_screen.display_garage() 
+        self.garage_screen.display_garage()
+        self.garage_screen.display_buttons() 
+
 
     def get_next_state(self) -> GameState.State:
         # zmień na menu
-        if self.curr_state == GameState.State.GARAGE and pygame.key.get_pressed()[pygame.K_m]: 
+        if self.curr_state == GameState.State.GARAGE and self.garage_screen.click_button() == 1:
             return GameState.State.MENU
+        return None
+    
