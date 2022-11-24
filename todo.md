@@ -13,7 +13,6 @@ na kolejne zaj 20ktorys:
 ## kosmetyczne
 - przesuwanie sie elementów tła i dodać jakieś losowe
 - zrobić fajniejsze liczenie score 
-- dodac miganie auta po zderzeniu z przeszkoda i okres invincibility 
 - dodać muzykę i efekty dźwiękowe? 
 - wyjazd auta jako start
 - game over jako sfreezowany ekran mapy?

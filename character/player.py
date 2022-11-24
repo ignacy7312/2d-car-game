@@ -30,6 +30,10 @@ class Player(Character):
         # self.turnright_rect = self.normal_image.get_rect(center = (self.x + 50, self.y))
         # self.turnright_rect = self.turnright_image.get_rect(center = (self.x, self.y))
         #self.turn_rect = self.normal_image.get_rect(center = (self.x + 90, self.y))
+        
+        # przezroczysty obraz - 54/110 wymiary auta
+        self.blink_image = pygame.Surface((54,110), pygame.SRCALPHA, 32)
+        
         self.image = self.normal_image
         self.rect = self.normal_rect
         
@@ -39,6 +43,8 @@ class Player(Character):
         self.score = 0
         self.hp = 3
         self.dx = 6
+        self.blink_invinc_end_time = 0
+        self.invincible = False
 
     def move(self, collision):
         if pygame.key.get_pressed()[pygame.K_a] and not collision[0]:
@@ -56,13 +62,10 @@ class Player(Character):
             self.image = self.normal_image
             self.rect = self.normal_rect
             
+    def display_player(self, image, screen):
+        screen.blit(image, self.rect)
 
-        
-    def blink(self):
-        # miganie gracza chwilę po tym jak zderzy się z przeszkodą
-        # powinien być jeszcze okres invincible
-        pass
-        
+
         # print(self.rect.width, self.rect.height, self.dx)
     
     

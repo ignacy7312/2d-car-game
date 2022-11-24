@@ -122,7 +122,8 @@ class Map(GameScreen):
         # print(self.check_for_border_collision())
         if self.check_for_border_collision():
             self.player1.move(self.check_for_border_collision())
-            self.player1.rect.x = self.player1.x   
+            self.player1.rect.x = self.player1.x 
+            self.toggle_player_inivincible()
             
     def check_for_border_collision(self) -> list[bool, bool]:
         # zwraca kolizję z granicą w postaci dwuelementowej listy
@@ -203,16 +204,22 @@ class Map(GameScreen):
     def check_for_obs_collision(self) -> bool:
         # sprawdza czy występuje kolizja gracza z przeszkodą
         for obstacle in self.obstacles:
-            if pygame.Rect.colliderect(obstacle.rect, self.player1.rect):
+            if pygame.Rect.colliderect(obstacle.rect, self.player1.rect) and not self.player1.invincible:
+                self.player1.blink_invinc_end_time = pygame.time.get_ticks() + 1000
                 self.player1.hp -= 1
                 self.obstacles.remove(obstacle)
                 del obstacle
+                
                 
                 # zwraca funkcję sprawdzającą hp, która zwraca True jeżeli HP == 0,
                 # czyli ta funkcja zwroci True jezeli gracz straci hp - gra ma sie skonczyc
                 return self.checking_hp()
 
         return False
+    
+    def toggle_player_inivincible(self):
+        self.player1.invincible = True if pygame.time.get_ticks() <= self.player1.blink_invinc_end_time else False
+            
             
 
     def display_map_elements(self):
@@ -220,9 +227,26 @@ class Map(GameScreen):
         self.screen.blit(self.baner, self.baner_rect)
 
 
+    def display_player(self):
+        # FUNKCJA KTORA MIGA GRACZEM
+        # miganie gracza chwilę po tym jak zderzy się z przeszkodą
+        # powinien być jeszcze okres invincible
+        # czas migania/invcs - jedna sekunda
+        print(self.player1.invincible)
+        if pygame.time.get_ticks() <= self.player1.blink_invinc_end_time -800:
+            self.player1.display_player(self.player1.blink_image, self.screen)
+        elif self.player1.blink_invinc_end_time -600 <= pygame.time.get_ticks() <= self.player1.blink_invinc_end_time -400:
+            self.player1.display_player(self.player1.blink_image, self.screen)
+        elif self.player1.blink_invinc_end_time -200 <= pygame.time.get_ticks() <= self.player1.blink_invinc_end_time:
+            self.player1.display_player(self.player1.blink_image, self.screen)     
+        else:
+            self.player1.display_character(self.screen)
+        
+        
     def display_characters(self):
         # wyświetla charactery    
-        self.player1.display_character(self.screen)
+        self.display_player()
+        #self.player1.display_character(self.screen)
         
         # debug:
         self.display_debug_rect()
