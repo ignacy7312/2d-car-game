@@ -31,10 +31,10 @@ class GameState():
         self.h = h
         self.curr_state = GameState.State.MENU
         self.curr_state_obj = None
-        self.game_active_obj = None
-        self.game_over_obj = None
-        self.garage_obj = None
-        self.menu_obj = None
+        #self.game_active_obj = None
+        #self.game_over_obj = None
+        #self.garage_obj = None
+        #self.menu_obj = None
     
     # obie medtody występują w każdej klasie stanu.
     def handle(self): pass
@@ -48,22 +48,30 @@ także dziedziczy po GameState, zawiera obiekty wszystkich stanów
 
 """
 class GameAgent(GameState):
+    
+    SELECTED_PLAYER = 0
+    
     def __init__(self, w, h):
         super().__init__(w, h)
-        self.game_active_obj = GameActiveState(self.w, self.h)
-        self.game_over_obj = None
-        self.garage_obj = GarageState(self.w, self.h)
-        self.menu_obj = MenuState(self.w, self.h)
-        self.curr_state_obj = self.menu_obj # pierwotnym stanem jest menu
+        #self.garage_obj = GarageState(self.w, self.h)
+        #self.game_active_obj = GameActiveState(self.w, self.h, garage_module.Garage.SELECTED_CAR)
+        #self.game_over_obj = None
+        #self.menu_obj = MenuState(self.w, self.h)
+
+        self.curr_state_obj = MenuState(self.w, self.h) # pierwotnym stanem jest menu
+
+        self.selected_player = 0
 
     def change_state(self, next_state : GameState.State):
         # funckja przyjmuje jako argument kolejny stan, który ma nastąpić 
         # i zmienia aktualny stan na kolejny
         if next_state == GameState.State.MENU:
+            self.selected_player = self.curr_state_obj.garage_screen.get_selected_car()
+            SELECTED_PLAYER = self.selected_player
             self.curr_state_obj = MenuState(self.w, self.h)
         
         if next_state == GameState.State.GAME:
-            self.curr_state_obj = GameActiveState(self.w, self.h)
+            self.curr_state_obj = GameActiveState(self.w, self.h, self.selected_player) #garage_module.Garage.get_selected_car())
         
         if next_state == GameState.State.GAME_OVER:
             self.curr_state_obj = GameOverState(self.w, self.h, self.curr_state_obj.game_screen.score,
@@ -87,9 +95,9 @@ czy ma nastąpić przejście do kolejnego stanu. Ze stanu gry aktywnej mozna prz
 
 """
 class GameActiveState(GameState):
-    def __init__(self, w, h):
+    def __init__(self, w, h, selected_player):
         super().__init__(w,h)
-        self.game_screen = map_module.Map(self.w, self.h)
+        self.game_screen = map_module.Map(self.w, self.h, selected_player)
         self.curr_state = GameState.State.GAME
 
 
@@ -125,7 +133,7 @@ jako argument przyjmuje także wynik uzyskany w poprzedniej grze
 """
 class GameOverState(GameActiveState):
     def __init__(self, w, h, score, money):
-        super().__init__(w, h)
+        super().__init__(w, h, GameAgent.SELECTED_PLAYER) # self.selected_player)
         self.game_over_screen = game_over_module.GameOverScreen(self.w, self.h) 
         self.curr_state = GameState.State.GAME_OVER
         self.score = score
@@ -194,12 +202,15 @@ class GarageState(GameState):
 
     def handle(self):
         self.garage_screen.display_garage()
-        self.garage_screen.display_buttons() 
+        self.garage_screen.display_buttons()
+        self.garage_screen.move_arrow()
+        self.garage_screen.display_car()
+        self.garage_screen.select_car() 
 
 
     def get_next_state(self) -> GameState.State:
         # zmień na menu
-        if self.curr_state == GameState.State.GARAGE and self.garage_screen.click_button() == 1:
+        if self.curr_state == GameState.State.GARAGE and self.garage_screen.click_menu_button() == 1:
             return GameState.State.MENU
         return None
     

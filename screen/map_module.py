@@ -24,7 +24,7 @@ class Map(GameScreen):
     baner - element mapy, kierunek wyspa słodowa
     """
 
-    def __init__(self, w, h):
+    def __init__(self, w, h, selected_player):
         super().__init__(w, h)
         self.font = pygame.font.Font("textures/font.ttf", 16)
         self.baner = pygame.image.load('textures/baner.png').convert_alpha()
@@ -32,7 +32,7 @@ class Map(GameScreen):
         # i ogólnie elementy mapy pewnie powinny być w jakiejś liście
         self.baner_rect = self.baner.get_rect(center = (self.w - 150, 300))
         self.game_speed = 1 
-        self.player1 = Player(350,670) # wstępna pozycja
+        self.player1 = Player(350,670, selected_player) # wstępna pozycja
         self.obstacles = []
 
         self.game_over = False
@@ -204,21 +204,23 @@ class Map(GameScreen):
     def check_for_obs_collision(self) -> bool:
         # sprawdza czy występuje kolizja gracza z przeszkodą
         for obstacle in self.obstacles:
-            if pygame.Rect.colliderect(obstacle.rect, self.player1.rect) and not self.player1.invincible:
+            if pygame.Rect.colliderect(obstacle.rect, self.player1.rect) and (not self.player1.invincible) and (not self.player1.is_colliding):
                 self.player1.blink_invinc_end_time = pygame.time.get_ticks() + 1000
                 self.player1.hp -= 1
                 self.obstacles.remove(obstacle)
+                self.player1.is_colliding = True
                 del obstacle
+
                 
                 
                 # zwraca funkcję sprawdzającą hp, która zwraca True jeżeli HP == 0,
                 # czyli ta funkcja zwroci True jezeli gracz straci hp - gra ma sie skonczyc
                 return self.checking_hp()
-
+        self.player1.is_colliding = False
         return False
     
     def toggle_player_inivincible(self):
-        self.player1.invincible = True if pygame.time.get_ticks() <= self.player1.blink_invinc_end_time else False
+        self.player1.invincible = True if pygame.time.get_ticks() <= self.player1.blink_invinc_end_time + 200 else False
             
             
 
@@ -232,7 +234,7 @@ class Map(GameScreen):
         # miganie gracza chwilę po tym jak zderzy się z przeszkodą
         # powinien być jeszcze okres invincible
         # czas migania/invcs - jedna sekunda
-        print(self.player1.invincible)
+        # print(self.player1.invincible)
         if pygame.time.get_ticks() <= self.player1.blink_invinc_end_time -800:
             self.player1.display_player(self.player1.blink_image, self.screen)
         elif self.player1.blink_invinc_end_time -600 <= pygame.time.get_ticks() <= self.player1.blink_invinc_end_time -400:

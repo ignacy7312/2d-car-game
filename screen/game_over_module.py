@@ -8,7 +8,7 @@ class GameOverScreen(GameScreen):
     def __init__(self, w, h):
         super().__init__(w, h)
         
-        self.text1 = self.font.render("press SPACE to start", True, 'black')
+        self.text1 = self.font.render("press SPACE to restart", True, 'black')
         self.text_rect1 = self.text1.get_rect(center = (self.w//2, self.h//2))
         self.text2 = self.font.render("press m to go back to menu", True, 'black')
         self.text_rect2 = self.text2.get_rect(center = (self.w//2, self.h//2 + 200))

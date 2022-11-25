@@ -4,6 +4,7 @@ import settings
 import math
 
 from character.character import Character
+from screen.garage_module import Garage
 
 
 class Player(Character):
@@ -18,10 +19,14 @@ class Player(Character):
     hp - punkty życia (początkowo 3)
     """
 
-    def __init__(self, x, y):
-        # konstruktor, wymaga podania startowej pozycji gracza (auta)
+    def __init__(self, x, y, selected_car):
+        # konstruktor, wymaga podania startowej pozycji gracza (auta) oraz numeru odpowiadającego auta
         super().__init__(x, y)
-        self.normal_image = self.load_and_rescale('textures/auto.png', 0.22, 180)
+        self.player_red = self.load_and_rescale('textures/czerwonegora.png', 0.22, 0)
+        self.player_yellow = self.load_and_rescale('textures/lambogora.png', 0.22, 0)
+        self.player_white = self.load_and_rescale('textures/bialegora.png', 0.22, 0)
+
+        self.normal_image = self.select_player(selected_car)
         self.normal_rect = self.normal_image.get_rect(center = (self.x, self.y))
         self.turnleft_image = pygame.transform.rotate(self.normal_image, 20)
         # self.turnleft_rect = self.normal_image.get_rect(center = (self.x - 50, self.y))
@@ -45,6 +50,18 @@ class Player(Character):
         self.dx = 6
         self.blink_invinc_end_time = 0
         self.invincible = False
+        self.is_colliding = False
+
+    def select_player(self, selected_car) -> pygame.image:
+        # wybierz auto zgodnie z numeracja
+        print(selected_car)
+        if selected_car == 0:
+            return self.player_red
+        if selected_car == 1:
+            return self.player_yellow
+        if selected_car == 2:
+            return self.player_white
+
 
     def move(self, collision):
         if pygame.key.get_pressed()[pygame.K_a] and not collision[0]:

@@ -8,7 +8,8 @@ curs.execute('''
     CREATE TABLE game (
         highscore integer,
         monety integer,
-        cars integer)
+        cars integer,
+        selected_car integer)
         
 ''')
 

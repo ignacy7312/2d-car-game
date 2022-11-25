@@ -2,7 +2,7 @@ na kolejne zaj 20ktorys:
 
 ## wazne
 
-- monety 
+- wybór auta: garaż zapisuje aktualnie wybrane do bazy danych, a klasa tworząca gracza pobiera to z bazy danych ????
 - sqlite - baza danych na monety, auta i high score
 - ekran STATS gdy już bedzie baza danych
 - skrypt na zrobinie umla z kodu 

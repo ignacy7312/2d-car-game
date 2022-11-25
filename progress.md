@@ -1,5 +1,3 @@
-# update 11.11
+# update 25.11
 
-dodano maszyne stanów, która obsługuje całą grę 
-
-no i podział na stany
+wybor auta w garażu 
