@@ -3,7 +3,7 @@ from enum import Enum
 
 import settings
 from screen import menu_module, garage_module, game_over_module, map_module
-
+from character import sqlite
 
 """
 Klasa GameState
@@ -50,7 +50,11 @@ także dziedziczy po GameState, zawiera obiekty wszystkich stanów
 class GameAgent(GameState):
     
     SELECTED_PLAYER = 0
-    
+    highscore = 0
+    monety = 0
+    cars = 0
+    selected_car = 0
+
     def __init__(self, w, h):
         super().__init__(w, h)
         #self.garage_obj = GarageState(self.w, self.h)
@@ -61,6 +65,15 @@ class GameAgent(GameState):
         self.curr_state_obj = MenuState(self.w, self.h) # pierwotnym stanem jest menu
 
         self.selected_player = 0
+        self.database = sqlite.Save()
+        self.data = self.database.readdata()
+        highscore = self.data[0]
+        monety = self.data[1]
+        cars = self.data[2]
+        selected_car = self.data[3]
+        print(self.data)
+
+
 
     def change_state(self, next_state : GameState.State):
         # funckja przyjmuje jako argument kolejny stan, który ma nastąpić 
@@ -72,12 +85,12 @@ class GameAgent(GameState):
             self.curr_state = GameState.State.MENU
         
         if next_state == GameState.State.GAME:
-            self.curr_state_obj = GameActiveState(self.w, self.h, self.selected_player) #garage_module.Garage.get_selected_car())
+            self.curr_state_obj = GameActiveState(self.w, self.h, self.selected_player)
             self.curr_state = GameState.State.GAME
         
         if next_state == GameState.State.GAME_OVER:
             self.curr_state_obj = GameOverState(self.w, self.h, self.curr_state_obj.game_screen.score,
-                                                    self.curr_state_obj.game_screen.player1.game_money)
+                                                    self.curr_state_obj.game_screen.player1.game_money,self.database)
             self.curr_state = GameState.State.GAME_OVER
             
         if next_state == GameState.State.GARAGE:
@@ -104,7 +117,6 @@ class GameActiveState(GameState):
         self.game_screen = map_module.Map(self.w, self.h, selected_player)
         self.curr_state = GameState.State.GAME
 
-
     def handle(self):
         # aktualizuje rozgrywkę
         self.game_screen.update_characters()
@@ -119,6 +131,7 @@ class GameActiveState(GameState):
     def get_next_state(self) -> GameState.State:
         # jeżeli warunek zostaje spełniony, to zwraca kolejny stan - wtym wypadku tylko game over
         if self.curr_state == GameState.State.GAME and self.game_screen.game_over:
+
             return GameState.State.GAME_OVER
         return None
 
@@ -136,13 +149,14 @@ Ze stanu GameOver można przejść do stanu Menu albo GameActive (rozpocząć ro
 jako argument przyjmuje także wynik uzyskany w poprzedniej grze
 """
 class GameOverState(GameActiveState):
-    def __init__(self, w, h, score, money):
+    def __init__(self, w, h, score, money,database):
         super().__init__(w, h, GameAgent.SELECTED_PLAYER) # self.selected_player)
         self.game_over_screen = game_over_module.GameOverScreen(self.w, self.h) 
         self.curr_state = GameState.State.GAME_OVER
         self.score = score
         self.money = money
-        
+
+
     def handle(self):
 
         self.game_over_screen.display_bg()
