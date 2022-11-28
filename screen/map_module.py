@@ -34,6 +34,7 @@ class Map(GameScreen):
         self.game_speed = 1 
         self.player1 = Player(350,670, selected_player) # wstępna pozycja
         self.obstacles = []
+        self.life= Life(w, h)
 
         self.game_over = False
         
@@ -215,7 +216,7 @@ class Map(GameScreen):
                 
                 # zwraca funkcję sprawdzającą hp, która zwraca True jeżeli HP == 0,
                 # czyli ta funkcja zwroci True jezeli gracz straci hp - gra ma sie skonczyc
-                return self.checking_hp()
+                return self.life.checking_hp(self.player1)
         self.player1.is_colliding = False
         return False
     
@@ -292,5 +293,46 @@ class Map(GameScreen):
         self.screen.blit(self.hp1, self.hp1_rect)
         self.screen.blit(self.hp2, self.hp2_rect)
         self.screen.blit(self.hp3, self.hp3_rect)
+        
+class Life():
+
+    def __init__(self,w ,h):
+        self.w=w
+        self.h=h
+        # dodawanie serduszek oraz ich skalowanie, myśle że można to gdzies przenieść w dyskretne miejsce żeby oczy nie bolały
+        self.hp1 = pygame.image.load('textures/serce.png').convert_alpha()
+        self.hp2 = pygame.image.load('textures/serce.png').convert_alpha()
+        self.hp3 = pygame.image.load('textures/serce.png').convert_alpha()
+        self.hp1_rect = self.hp1.get_rect(center=(self.w + 5, self.h - 670))
+        self.hp2_rect = self.hp2.get_rect(center=(self.w + 45, self.h - 670))
+        self.hp3_rect = self.hp3.get_rect(center=(self.w + 85, self.h - 670))
+        self.hp1 = pygame.transform.rotozoom(self.hp1, 0, 0.15)
+        self.hp2 = pygame.transform.rotozoom(self.hp2, 0, 0.15)
+        self.hp3 = pygame.transform.rotozoom(self.hp3, 0, 0.15)
+
+    def checking_hp(self, player1) -> bool:
+        if (player1.hp == 2):
+            # print('2')
+            self.hp1 = pygame.image.load('textures/kosa.png').convert_alpha()
+            self.hp1_rect = self.hp1.get_rect(center=(self.w - 80, self.h - 750))
+            self.hp1 = pygame.transform.rotozoom(self.hp1, 0, 0.40)
+            return False
+        elif (player1.hp == 1):
+            # print('1')
+            self.hp2 = pygame.image.load('textures/kosa.png').convert_alpha()
+            self.hp2_rect = self.hp2.get_rect(center=(self.w - 40, self.h - 750))
+            self.hp2 = pygame.transform.rotozoom(self.hp2, 0, 0.40)
+            return False
+        elif (player1.hp == 0):
+            self.hp3 = pygame.image.load('textures/kosa.png').convert_alpha()
+            self.hp3_rect = self.hp3.get_rect(center=(self.w, self.h - 750))
+            self.hp3 = pygame.transform.rotozoom(self.hp3, 0, 0.40)
+            # print('deat')
+            return True
+
+    def show_life(self, screen):
+        screen.blit(self.hp1, self.hp1_rect)
+        screen.blit(self.hp2, self.hp2_rect)
+        screen.blit(self.hp3, self.hp3_rect)
 
     

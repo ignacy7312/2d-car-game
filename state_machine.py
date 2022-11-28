@@ -66,19 +66,23 @@ class GameAgent(GameState):
         # funckja przyjmuje jako argument kolejny stan, który ma nastąpić 
         # i zmienia aktualny stan na kolejny
         if next_state == GameState.State.MENU:
-            self.selected_player = self.curr_state_obj.garage_screen.get_selected_car()
-            SELECTED_PLAYER = self.selected_player
+            if self.curr_state != GameState.State.GAME_OVER:
+                self.selected_player = self.curr_state_obj.garage_screen.get_selected_car()                
             self.curr_state_obj = MenuState(self.w, self.h)
+            self.curr_state = GameState.State.MENU
         
         if next_state == GameState.State.GAME:
             self.curr_state_obj = GameActiveState(self.w, self.h, self.selected_player) #garage_module.Garage.get_selected_car())
+            self.curr_state = GameState.State.GAME
         
         if next_state == GameState.State.GAME_OVER:
             self.curr_state_obj = GameOverState(self.w, self.h, self.curr_state_obj.game_screen.score,
                                                     self.curr_state_obj.game_screen.player1.game_money)
+            self.curr_state = GameState.State.GAME_OVER
             
         if next_state == GameState.State.GARAGE:
             self.curr_state_obj = GarageState(self.w, self.h)
+            self.curr_state = GameState.State.GARAGE
         
     def execute(self):  
         # wykonanie akcji aktualnie obowiązującego stanu
@@ -108,7 +112,7 @@ class GameActiveState(GameState):
         self.game_screen.display_map_elements()
         self.game_screen.display_characters()
         self.game_screen.display_score_and_money()
-        self.game_screen.show_life()
+        self.game_screen.life.show_life(self.game_screen.screen)
         
         
 
