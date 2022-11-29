@@ -1,12 +1,14 @@
-import settings
 import pygame
-from game_screen_class import *
-from sys import exit
-import enum
+import sys
+import os
+import psutil
+
+import settings
 import state_machine
 
 class Game:
-    
+    process = psutil.Process(os.getpid())
+
     """
     Główna klasa gry
     w,h - rozdzielczość ekranu
@@ -30,8 +32,10 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    exit()
-
+                    sys.exit()
+            
+            # print(f'Takes {(Game.process.memory_info().rss)//1000000}MB')  # in bytes 
+            
             self.game_agent.execute()
             
             pygame.display.update()
