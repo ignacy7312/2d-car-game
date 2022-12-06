@@ -2,12 +2,14 @@ import pygame
 import math
 import random
 
+import ogar_db
 from screen.game_screen_class import GameScreen
 
 class GameOverScreen(GameScreen):
     def __init__(self, w, h):
         super().__init__(w, h)
         
+        self.high_score = ogar_db.get_highscore(ogar_db.create_connection().cursor())
         self.text1 = self.font.render("press SPACE to restart", True, 'black')
         self.text_rect1 = self.text1.get_rect(center = (self.w//2, self.h//2))
         self.text2 = self.font.render("press m to go back to menu", True, 'black')
@@ -20,9 +22,22 @@ class GameOverScreen(GameScreen):
         
         
     def display_score(self, score):
-        score_txt = self.font.render(f'score: {score}', True, 'black')
+        if score > self.high_score:
+            score_txt = self.font.render(f'New High Score!: {score}', True, 'black')
+        else:
+            score_txt = self.font.render(f'score: {score}', True, 'black')
+            self.display_high_score()
+        
         score_txt_rect = score_txt.get_rect(center = (self.w//2, 200))
         self.screen.blit(score_txt, score_txt_rect)
+        
+    def display_high_score(self):
+        score_txt = self.font.render(f'Current high score: {self.high_score}', True, 'black')
+        score_txt_rect = score_txt.get_rect(center = (self.w//2, 100))
+        self.screen.blit(score_txt, score_txt_rect)
+        
+    
+        
 
     def display_money_earned(self, money):
         money_txt = self.font.render(f'coins earned: ', True, 'black')

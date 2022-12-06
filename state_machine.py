@@ -2,6 +2,7 @@ import pygame
 from enum import Enum
 
 import settings
+import ogar_db
 from screen import menu_module, garage_module, game_over_module, map_module
 from character import sqlite
 
@@ -81,10 +82,17 @@ class GameAgent(GameState):
         if next_state == GameState.State.MENU:
             if self.curr_state != GameState.State.GAME_OVER:
                 self.selected_player = self.curr_state_obj.garage_screen.get_selected_car()                
+            else:
+                if self.curr_state_obj.score > self.curr_state_obj.garage_screen.high_score:
+                    ogar_db.update_highscore(ogar_db.create_connection(), self.curr_state_obj.score)
             self.curr_state_obj = MenuState(self.w, self.h)
             self.curr_state = GameState.State.MENU
         
         if next_state == GameState.State.GAME:
+            if self.curr_state == GameState.State.GAME_OVER:
+                if self.curr_state_obj.score > self.curr_state_obj.garage_screen.high_score:
+                    ogar_db.update_highscore(ogar_db.create_connection(), self.curr_state_obj.score)
+            
             self.curr_state_obj = GameActiveState(self.w, self.h, self.selected_player)
             self.curr_state = GameState.State.GAME
         
@@ -149,7 +157,7 @@ Ze stanu GameOver można przejść do stanu Menu albo GameActive (rozpocząć ro
 jako argument przyjmuje także wynik uzyskany w poprzedniej grze
 """
 class GameOverState(GameActiveState):
-    def __init__(self, w, h, score, money,database):
+    def __init__(self, w, h, score, money):
         super().__init__(w, h, GameAgent.SELECTED_PLAYER) # self.selected_player)
         self.game_over_screen = game_over_module.GameOverScreen(self.w, self.h) 
         self.curr_state = GameState.State.GAME_OVER

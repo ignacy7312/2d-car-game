@@ -2,6 +2,7 @@ import pygame
 import math
 import random
 
+import ogar_db
 from screen.game_screen_class import GameScreen
 
 
@@ -18,6 +19,7 @@ class Menu(GameScreen):
         self.stats_button = pygame.image.load('textures/buttons/statsbtn.png').convert_alpha()
         self.stats_button_rect = self.stats_button.get_rect(center = (300, 620))
 
+        self.high_score = ogar_db.get_highscore()
         
         # na tym etapie juz useless ale zostawiam bo moze sie przydac
         # self.text1 = self.font.render("press SPACE to start", True, 'black')
@@ -29,7 +31,7 @@ class Menu(GameScreen):
         self.text2 = pygame.font.Font("textures/font.ttf", 30).render("WROCLAW MOST WANTED", True, 'black')
         self.text_rect2 = self.text2.get_rect(center = (self.w//2, 80))
         # dodać HIGH SCORE
-        self.text3 = self.font.render(f"CURRENT HIGH SCORE: {-1}", True, 'black')
+        self.text3 = self.font.render(f"CURRENT HIGH SCORE: {self.high_score}", True, 'black')
         self.text_rect3 = self.text3.get_rect(center = (self.w//2, 180))
 
 

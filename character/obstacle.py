@@ -3,7 +3,7 @@ import random
 import settings
 import math
 
-from character.character import Character
+from character.chr import Character
 
 
 class Obstacle(Character):
