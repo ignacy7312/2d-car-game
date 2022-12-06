@@ -9,7 +9,7 @@ class GameOverScreen(GameScreen):
     def __init__(self, w, h):
         super().__init__(w, h)
         
-        self.high_score = ogar_db.get_highscore(ogar_db.create_connection().cursor())
+        self.high_score = ogar_db.get_highscore(ogar_db.create_connection('baza2.db').cursor())
         self.text1 = self.font.render("press SPACE to restart", True, 'black')
         self.text_rect1 = self.text1.get_rect(center = (self.w//2, self.h//2))
         self.text2 = self.font.render("press m to go back to menu", True, 'black')
@@ -33,7 +33,7 @@ class GameOverScreen(GameScreen):
         
     def display_high_score(self):
         score_txt = self.font.render(f'Current high score: {self.high_score}', True, 'black')
-        score_txt_rect = score_txt.get_rect(center = (self.w//2, 100))
+        score_txt_rect = score_txt.get_rect(center = (self.w//2, 250))
         self.screen.blit(score_txt, score_txt_rect)
         
     

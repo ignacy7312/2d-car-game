@@ -89,9 +89,10 @@ class Map(GameScreen):
         
     def increase_speed(self):
         # przyspiesz grę co 3 sekundy -- wartości można zmienić
-        if pygame.time.get_ticks() % 3000 == 0:
-            self.game_speed *= 1.01
-            self.player1.dx *= 1.01
+        if round(pygame.time.get_ticks(), -3) % 3000 == 0:
+            self.game_speed *= 1.0005
+            self.player1.dx *= 1.0005
+        #print(self.game_speed)
 
 
     def update_characters(self):
@@ -113,10 +114,12 @@ class Map(GameScreen):
                 
     def update_player(self):
         # print(self.check_for_border_collision())
+        #self.player1.move_to_initial_pos()
         if self.check_for_border_collision():
             self.player1.move(self.check_for_border_collision())
             self.player1.rect.x = self.player1.x 
             self.toggle_player_inivincible()
+            
             
     def check_for_border_collision(self) -> list[bool, bool]:
         # zwraca kolizję z granicą w postaci dwuelementowej listy
@@ -166,7 +169,7 @@ class Map(GameScreen):
     def add_obstacle(self):
         # dodaje przeszkodę we w miarę losowym momencie, nie może być póki co więcej niż 5 na ekranie
         # sprawdza czy w miejscu gdzie ma się pojawić przeszkoda występuje już jakaś inna przeszkoda
-        if random.randint(1, 100) % 33 == 0 and len(self.obstacles) < 5:
+        if random.randint(1, 101) % 50 == 0 and len(self.obstacles) < 5:
             if random.randint(1,9) % 8 == 0:
                 obs = StaticObstacle()
             else:

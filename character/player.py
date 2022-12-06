@@ -64,6 +64,8 @@ class Player(Character):
 
 
     def move(self, collision):
+        
+            
         if pygame.key.get_pressed()[pygame.K_a] and not collision[0]:
             # jezeli wciska sie 'a' i nie ma kolizji z lewą stroną
             self.x -= int(self.dx)
@@ -73,16 +75,37 @@ class Player(Character):
             # jezeli wciska sie 'd' i nie ma kolizji z prawą stroną
             self.x += int(self.dx)
             self.image = self.turnright_image
+            #self.rect = self.create_player_rect()
             #self.rect = pygame.Rect((self.x+100, self.y), (50, 100))
+            
         else:
-            # jeżeli auto jedzie prost
+            # jeżeli auto jedzie prosto
+            """if self.y > 665:
+                self.y -= 5
+                self.rect = self.image.get_rect(center = (self.x, self.y))
+            else: """
             self.image = self.normal_image
             self.rect = self.normal_rect
+                
+            
             
     def display_player(self, image, screen):
         screen.blit(image, self.rect)
 
 
+    def move_to_initial_pos(self):
+        if self.y > 670:
+            print('aaaaaa')
+            self.y -= 1
+            print(self.y)
+
+    # testowe:
+    def create_player_rect(self):
+        #p_rect = self.image.get_rect(center = (self.x, self.y))
+        x = self.x + 54
+        p_rect = pygame.Rect(x, self.y - 110/2, 20, 100)
+        print(self.x, x)
+        return p_rect
         # print(self.rect.width, self.rect.height, self.dx)
     
     

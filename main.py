@@ -34,7 +34,7 @@ class Game:
                     pygame.quit()
                     sys.exit()
             
-            # print(f'Takes {(Game.process.memory_info().rss)//1000000}MB')  # in bytes 
+            print(f'Takes {(Game.process.memory_info().rss)//1000000}MB')  # in bytes 
             
             self.game_agent.execute()
             

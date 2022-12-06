@@ -66,13 +66,13 @@ class GameAgent(GameState):
         self.curr_state_obj = MenuState(self.w, self.h) # pierwotnym stanem jest menu
 
         self.selected_player = 0
-        self.database = sqlite.Save()
-        self.data = self.database.readdata()
-        highscore = self.data[0]
-        monety = self.data[1]
-        cars = self.data[2]
-        selected_car = self.data[3]
-        print(self.data)
+        #self.database = sqlite.Save()
+        #self.data = self.database.readdata()
+        #highscore = self.data[0]
+        #monety = self.data[1]
+        #cars = self.data[2]
+        #selected_car = self.data[3]
+        #print(self.data)
 
 
 
@@ -82,23 +82,18 @@ class GameAgent(GameState):
         if next_state == GameState.State.MENU:
             if self.curr_state != GameState.State.GAME_OVER:
                 self.selected_player = self.curr_state_obj.garage_screen.get_selected_car()                
-            else:
-                if self.curr_state_obj.score > self.curr_state_obj.garage_screen.high_score:
-                    ogar_db.update_highscore(ogar_db.create_connection(), self.curr_state_obj.score)
+            
             self.curr_state_obj = MenuState(self.w, self.h)
             self.curr_state = GameState.State.MENU
         
         if next_state == GameState.State.GAME:
-            if self.curr_state == GameState.State.GAME_OVER:
-                if self.curr_state_obj.score > self.curr_state_obj.garage_screen.high_score:
-                    ogar_db.update_highscore(ogar_db.create_connection(), self.curr_state_obj.score)
             
             self.curr_state_obj = GameActiveState(self.w, self.h, self.selected_player)
             self.curr_state = GameState.State.GAME
         
         if next_state == GameState.State.GAME_OVER:
             self.curr_state_obj = GameOverState(self.w, self.h, self.curr_state_obj.game_screen.score,
-                                                    self.curr_state_obj.game_screen.player1.game_money,self.database)
+                                                    self.curr_state_obj.game_screen.player1.game_money) #,self.database)
             self.curr_state = GameState.State.GAME_OVER
             
         if next_state == GameState.State.GARAGE:
@@ -176,13 +171,25 @@ class GameOverState(GameActiveState):
     def get_next_state(self) -> GameState.State:
         # rozpocznij grę na nowo
         if self.curr_state == GameState.State.GAME_OVER and pygame.key.get_pressed()[pygame.K_SPACE]:
+            self.save_hs()
+            self.save_money()
             return GameState.State.GAME
 
         #zmień na stan menu 
         if self.curr_state == GameState.State.GAME_OVER and pygame.key.get_pressed()[pygame.K_m]:
+            self.save_hs()
+            self.save_money()
             return GameState.State.MENU
         return None
 
+    
+    def save_hs(self):
+        if self.score > self.game_over_screen.high_score:
+            ogar_db.update_highscore(ogar_db.create_connection('baza2.db'), self.score)
+    
+    
+    def save_money(self):
+        ogar_db.update_coins(ogar_db.create_connection('baza2.db'), self.money)
 
 """
 Klasa stanu menu.

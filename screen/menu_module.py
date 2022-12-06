@@ -19,7 +19,7 @@ class Menu(GameScreen):
         self.stats_button = pygame.image.load('textures/buttons/statsbtn.png').convert_alpha()
         self.stats_button_rect = self.stats_button.get_rect(center = (300, 620))
 
-        self.high_score = ogar_db.get_highscore()
+        self.high_score = ogar_db.get_highscore(ogar_db.create_connection('baza2.db').cursor())
         
         # na tym etapie juz useless ale zostawiam bo moze sie przydac
         # self.text1 = self.font.render("press SPACE to start", True, 'black')

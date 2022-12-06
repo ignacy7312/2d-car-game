@@ -2,6 +2,7 @@ import pygame
 import math
 import random
 
+import ogar_db
 from screen.game_screen_class import GameScreen
 
 
@@ -11,15 +12,21 @@ class Garage(GameScreen):
 
     def __init__(self, w, h):
         super().__init__(w, h)
+        
+        self.coins = ogar_db.get_coins(ogar_db.create_connection('baza2.db').cursor())
+        
         self.text1 = self.font.render("select your supercar", True, 'black')
         self.text_rect1 = self.text1.get_rect(center = (self.w//2, 100))
+        
+        self.coins_txt = self.font.render(f"Coins: {self.coins}", True, 'black')
+        self.coins_txt_rect = self.coins_txt.get_rect(center = (self.w//2, 150))
         
         self.menu_button = pygame.image.load('textures/buttons/menubtn.png').convert_alpha()
         self.menu_button_rect = self.menu_button.get_rect(center = (300, 670))
         
         self.select_button = pygame.image.load('textures/buttons/selectbtn.png').convert_alpha()
         self.select_button = pygame.transform.rotozoom(self.select_button, 0, 0.6)
-        self.select_button_rect = self.select_button.get_rect(center = (300, self.h//2 + 100))
+        self.select_button_rect = self.select_button.get_rect(center = (300, self.h//2 + 150))
 
         self.l_arr = pygame.image.load('textures/buttons/larr.png').convert_alpha()
         self.l_arr_rect = self.l_arr.get_rect(center = (25, self.h//2))
@@ -75,7 +82,9 @@ class Garage(GameScreen):
     def select_car(self):
         if self.select_button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
             self.selected_car = self.curr_car
+            return True
             print(self.selected_car)
+        return False
 
     def get_selected_car(self):
         return self.selected_car       
@@ -91,6 +100,7 @@ class Garage(GameScreen):
     def display_garage(self):
         self.screen.fill('brown')
         self.screen.blit(self.text1, self.text_rect1)
+        self.screen.blit(self.coins_txt, self.coins_txt_rect)
 
     def display_car(self):
         self.screen.blit(self.cars[self.curr_car], self.car1_rect)
@@ -101,6 +111,8 @@ class Garage(GameScreen):
         # 1 - MENU
         
         if self.menu_button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+            return 1
+        elif self.select_car():
             return 1
             
         
