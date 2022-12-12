@@ -35,3 +35,6 @@ class Character(pygame.sprite.Sprite):
     def display_character(self, screen):
         # wyświetl na ekranie
         screen.blit(self.image, self.rect)
+
+    def get_mask(self):
+        return pygame.mask.from_surface(self.image)
