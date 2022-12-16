@@ -2,14 +2,16 @@ import pygame
 import math
 import random
 
-import ogar_db
+from db.storagedriver import StorageDriver
 from screen.game_screen_class import GameScreen
 
 class GameOverScreen(GameScreen):
     def __init__(self, w, h):
         super().__init__(w, h)
         
-        self.high_score = ogar_db.get_highscore(ogar_db.create_connection('baza2.db').cursor())
+        self.storage_driver = StorageDriver()
+        
+        self.high_score = self.storage_driver.get_highscore()[0]
         self.text1 = self.font.render("press SPACE to restart", True, 'black')
         self.text_rect1 = self.text1.get_rect(center = (self.w//2, self.h//2))
         self.text2 = self.font.render("press m to go back to menu", True, 'black')

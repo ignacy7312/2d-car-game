@@ -2,7 +2,7 @@ import pygame
 import math
 import random
 
-import ogar_db
+from db.storagedriver import StorageDriver
 from screen.game_screen_class import GameScreen
 
 
@@ -13,10 +13,14 @@ class Garage(GameScreen):
     def __init__(self, w, h):
         super().__init__(w, h)
         
-        self.coins = ogar_db.get_coins(ogar_db.create_connection('baza2.db').cursor())
-        # to musi pobierać z bazy danych: !!!!
-        self.is_unlocked = [1,0,0]
+        self.storage_driver = StorageDriver()
+        self.coins = self.storage_driver.get_coins()[0]
+        # pobera z bazy danych:
+        self.is_unlocked = self.set_unlocked()
         self.value = [0,100,2000]
+        
+        # do testowania!!!!!
+        # self.storage_driver.lock_cars()
 
         self.text1 = self.font.render("select your supercar", True, 'black')
         self.text_rect1 = self.text1.get_rect(center = (self.w//2, 100))
@@ -72,7 +76,13 @@ class Garage(GameScreen):
 
         self.car_text_rect = self.cars_txt[self.curr_car].get_rect(center = (self.w//2, self.h//2 - 100))
         
+    def set_unlocked(self):
+        '''zwraca ktore auta sa odblokowane z bazy danych'''
+        return [self.storage_driver.is_car_unlocked(car_id) for car_id in range(0,3)]
     
+    def set_values(self):
+        '''zwraca ceny aut z bazy danych'''
+        pass
     
     def move_arrow(self):
         # przechodzenie po garażu klikając myszką w przycisk
@@ -99,18 +109,24 @@ class Garage(GameScreen):
         if self.select_button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
             if self.is_unlocked[self.curr_car]:
                 self.selected_car = self.curr_car
+                self.storage_driver.set_current_car(self.selected_car)
                 return True
                 print(self.selected_car)
             return False 
 
     def unlock_car(self):
         if self.buy_button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+            pygame.time.wait(150)
             if self.coins >= self.value[self.curr_car]:   #spakowac do jednej funkcji np check if car is affordable
                 self.coins -= self.value[self.curr_car]
                 self.is_unlocked[self.curr_car] = 1
                 print(self.is_unlocked)
+                self.storage_driver.unlock_car(self.curr_car)
+                self.storage_driver.set_coins(self.coins)
                 self.coins_txt = self.font.render(f"Coins: {self.coins}", True, 'black')
                 self.coins_txt_rect = self.coins_txt.get_rect(center=(self.w // 2, 150))
+            else:
+                pass                
 
     def get_selected_car(self):
         return self.selected_car       

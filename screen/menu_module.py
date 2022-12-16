@@ -2,7 +2,7 @@ import pygame
 import math
 import random
 
-import ogar_db
+from db.storagedriver import StorageDriver
 from screen.game_screen_class import GameScreen
 
 
@@ -12,6 +12,9 @@ class Menu(GameScreen):
         # pokaz myszke
         pygame.mouse.set_visible(True)
         super().__init__(w, h)
+        
+        self.storage_driver = StorageDriver()
+        
         self.garage_button = pygame.image.load('textures/buttons/garagebtn.png').convert_alpha()
         self.garage_button_rect = self.garage_button.get_rect(center = (300, 470))
         self.start_button = pygame.image.load('textures/buttons/playbtn.png').convert_alpha()
@@ -19,7 +22,7 @@ class Menu(GameScreen):
         self.stats_button = pygame.image.load('textures/buttons/statsbtn.png').convert_alpha()
         self.stats_button_rect = self.stats_button.get_rect(center = (300, 620))
 
-        self.high_score = ogar_db.get_highscore(ogar_db.create_connection('baza2.db').cursor())
+        self.high_score = self.storage_driver.get_highscore()[0]
         
         # na tym etapie juz useless ale zostawiam bo moze sie przydac
         # self.text1 = self.font.render("press SPACE to start", True, 'black')

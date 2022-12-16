@@ -2,9 +2,9 @@ import pygame
 from enum import Enum
 
 import settings
-import ogar_db
+from db.storagedriver import StorageDriver
 from screen import menu_module, garage_module, game_over_module, map_module
-from character import sqlite
+
 
 """
 Klasa GameState
@@ -63,16 +63,10 @@ class GameAgent(GameState):
         #self.game_over_obj = None
         #self.menu_obj = MenuState(self.w, self.h)
 
+        self.storage_driver = StorageDriver()
         self.curr_state_obj = MenuState(self.w, self.h) # pierwotnym stanem jest menu
 
-        self.selected_player = 0
-        #self.database = sqlite.Save()
-        #self.data = self.database.readdata()
-        #highscore = self.data[0]
-        #monety = self.data[1]
-        #cars = self.data[2]
-        #selected_car = self.data[3]
-        #print(self.data)
+        self.selected_player = self.storage_driver.get_current_car()
 
 
 
@@ -185,11 +179,11 @@ class GameOverState(GameActiveState):
     
     def save_hs(self):
         if self.score > self.game_over_screen.high_score:
-            ogar_db.update_highscore(ogar_db.create_connection('baza2.db'), self.score)
+            self.storage_driver = StorageDriver(score=self.score)
     
     
     def save_money(self):
-        ogar_db.update_coins(ogar_db.create_connection('baza2.db'), self.money)
+        self.storage_driver = StorageDriver(coins=self.money)
 
 """
 Klasa stanu menu.
