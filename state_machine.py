@@ -239,6 +239,7 @@ class GarageState(GameState):
         self.garage_screen.move_arrow()
         self.garage_screen.display_car()
         self.garage_screen.select_car() 
+        self.garage_screen.unlock_car()
 
 
     def get_next_state(self) -> GameState.State:

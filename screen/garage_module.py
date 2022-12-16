@@ -16,6 +16,7 @@ class Garage(GameScreen):
         self.coins = ogar_db.get_coins(ogar_db.create_connection('baza2.db').cursor())
         # to musi pobierać z bazy danych: !!!!
         self.is_unlocked = [1,0,0]
+        self.value = [0,100,2000]
 
         self.text1 = self.font.render("select your supercar", True, 'black')
         self.text_rect1 = self.text1.get_rect(center = (self.w//2, 100))
@@ -28,7 +29,7 @@ class Garage(GameScreen):
         
         self.select_button = pygame.image.load('textures/buttons/selectbtn.png').convert_alpha()
         self.select_button = pygame.transform.rotozoom(self.select_button, 0, 0.6)
-        self.select_button_rect = self.select_button.get_rect(center = (300, self.h//2 + 150))
+        self.select_button_rect = self.select_button.get_rect(center = (300, self.h//2 - 170))
 
         self.locked_button = pygame.image.load('textures/buttons/lockedb.png').convert_alpha()
         self.locked_button = pygame.transform.rotozoom(self.locked_button, 0, 0.6)
@@ -46,22 +47,25 @@ class Garage(GameScreen):
         self.car1 = pygame.image.load('textures/gcars/rcar.png').convert_alpha()
         self.car1_rect = self.car1.get_rect(center = (self.w//2, self.h//2))
         self.car1_text = self.font.render("nissan gtr", True, 'black')
-        
+        self.car1_value = self.font.render("", True, 'black')
+        self.car1_value_rect = self.car1_value.get_rect(center=(self.w // 2, self.h // 3))
 
         self.car2 = pygame.image.load('textures/gcars/yelcar.png').convert_alpha()
         self.car2_rect = self.car2.get_rect(center = (self.w//2, self.h//2))
         self.car2_text = self.font.render("Lambo", True, 'black')
-        
+        self.car2_value = self.font.render("100 PLN", True, 'black')
+        self.car2_value_rect = self.car2_value.get_rect(center=(self.w // 2, self.h // 3))
 
         self.car3 = pygame.image.load('textures/gcars/supra.png').convert_alpha()
         self.car3_rect = self.car3.get_rect(center = (self.w//2, self.h//2))
         self.car3_text = self.font.render("toyota Supra", True, 'black')
-        
-        
-        
+        self.car3_value = self.font.render("2000 PLN", True, 'black')
+        self.car3_value_rect = self.car3_value.get_rect(center=(self.w // 2, self.h // 3))
+
 
         self.cars = [self.car1, self.car2, self.car3]
         self.cars_txt = [self.car1_text, self.car2_text, self.car3_text]
+        self.cars_value =[self.car1_value, self.car2_value, self.car3_value]
         
         self.selected_car = 0
         self.curr_car = self.selected_car
@@ -79,7 +83,7 @@ class Garage(GameScreen):
             else:    
                 self.curr_car -= 1
             self.car_text_rect = self.cars_txt[self.curr_car].get_rect(center = (self.w//2, self.h//2 - 100))
-            pygame.time.wait(120)
+            pygame.time.wait(150)
         
         # zmień w prawo
         if self.r_arr_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
@@ -88,15 +92,25 @@ class Garage(GameScreen):
             else:    
                 self.curr_car += 1
             self.car_text_rect = self.cars_txt[self.curr_car].get_rect(center = (self.w//2, self.h//2 - 100))
-            pygame.time.wait(120)
+            pygame.time.wait(150)
         
     
     def select_car(self):
         if self.select_button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
-            self.selected_car = self.curr_car
-            return True
-            print(self.selected_car)
-        return False
+            if self.is_unlocked[self.curr_car]:
+                self.selected_car = self.curr_car
+                return True
+                print(self.selected_car)
+            return False 
+
+    def unlock_car(self):
+        if self.buy_button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+            if self.coins >= self.value[self.curr_car]:   #spakowac do jednej funkcji np check if car is affordable
+                self.coins -= self.value[self.curr_car]
+                self.is_unlocked[self.curr_car] = 1
+                print(self.is_unlocked)
+                self.coins_txt = self.font.render(f"Coins: {self.coins}", True, 'black')
+                self.coins_txt_rect = self.coins_txt.get_rect(center=(self.w // 2, 150))
 
     def get_selected_car(self):
         return self.selected_car       
@@ -104,6 +118,7 @@ class Garage(GameScreen):
     def display_select_button(self):
         ''' Funckja która odpowiednio wyświetla przycisk wyboru/blokady i zakupu auta'''
         if self.is_unlocked[self.curr_car]:
+            print(self.is_unlocked)
             self.screen.blit(self.select_button, self.select_button_rect)
         else:
             self.screen.blit(self.locked_button, self.locked_button_rect)
@@ -123,6 +138,7 @@ class Garage(GameScreen):
     def display_car(self):
         self.screen.blit(self.cars[self.curr_car], self.car1_rect)
         self.screen.blit(self.cars_txt[self.curr_car], self.car_text_rect)
+        self.screen.blit(self.cars_value[self.curr_car], self.car2_value_rect)
 
     def click_menu_button(self) -> int:
         # !!!! zwraca odpowiedni numer stanu, zgodny z GameState.State
