@@ -111,7 +111,7 @@ class Garage(GameScreen):
                 self.selected_car = self.curr_car
                 self.storage_driver.set_current_car(self.selected_car)
                 return True
-                print(self.selected_car)
+                # print(self.selected_car)
             return False 
 
     def unlock_car(self):
@@ -120,7 +120,7 @@ class Garage(GameScreen):
             if self.coins >= self.value[self.curr_car]:   #spakowac do jednej funkcji np check if car is affordable
                 self.coins -= self.value[self.curr_car]
                 self.is_unlocked[self.curr_car] = 1
-                print(self.is_unlocked)
+                # print(self.is_unlocked)
                 self.storage_driver.unlock_car(self.curr_car)
                 self.storage_driver.set_coins(self.coins)
                 self.coins_txt = self.font.render(f"Coins: {self.coins}", True, 'black')
@@ -134,7 +134,7 @@ class Garage(GameScreen):
     def display_select_button(self):
         ''' Funckja która odpowiednio wyświetla przycisk wyboru/blokady i zakupu auta'''
         if self.is_unlocked[self.curr_car]:
-            print(self.is_unlocked)
+            # print(self.is_unlocked)
             self.screen.blit(self.select_button, self.select_button_rect)
         else:
             self.screen.blit(self.locked_button, self.locked_button_rect)

@@ -106,7 +106,6 @@ class Map(GameScreen):
     def update_characters(self):
         # update na ekranie pozycję gracza i przeszkód
         # oraz sprawdza kolizję 
-        # jeżeli wystąpi kolizja to game_over = True
         self.increase_speed()
         self.add_obstacle()
         self.add_coin()
@@ -114,14 +113,12 @@ class Map(GameScreen):
         # ta funkcja zwraca true jezeli gracz straci hp i gra ma sie skonczyc 
         self.game_over = self.check_for_obs_collision()
         
-        
         self.collect_coin()
         self.update_player()
         self.update_obstacles()
         self.update_coins()
                 
     def update_player(self):
-        # print(self.check_for_border_collision())
         #self.player1.move_to_initial_pos()
         if self.check_for_border_collision():
             self.player1.move(self.check_for_border_collision())
@@ -266,8 +263,6 @@ class Map(GameScreen):
     def toggle_player_inivincible(self):
         self.player1.invincible = True if pygame.time.get_ticks() <= self.player1.blink_invinc_end_time + 200 else False
             
-            
-
     def display_map_elements(self):
         # wyświetla elementy mapy, takie jak np. baner
         self.screen.blit(self.baner, self.baner_rect)
@@ -276,7 +271,6 @@ class Map(GameScreen):
     def display_player(self):
         # FUNKCJA KTORA MIGA GRACZEM
         # miganie gracza chwilę po tym jak zderzy się z przeszkodą
-        # powinien być jeszcze okres invincible
         # czas migania/invcs - jedna sekunda
         # print(self.player1.invincible)
         if pygame.time.get_ticks() <= self.player1.blink_invinc_end_time -800:

@@ -1,14 +1,13 @@
-na kolejne zaj 20ktorys: 
+costam na po swietach
 
 ## wazne
 
-- wybór auta: garaż zapisuje aktualnie wybrane do bazy danych, a klasa tworząca gracza pobiera to z bazy danych ????
-- sqlite - baza danych na monety, auta i high score
 - ekran STATS gdy już bedzie baza danych
 - skrypt na zrobinie umla z kodu 
-- ogarnąć gita tak żeby main działał i wyjebać useless branche 
-- zoptymalizowac spawn obstacle/monety
-
+ - naprawić hitbox - pygame.mask
+- zoptymalizowac spawn obstacle/monety: napisać listę warunków kiedy co może sie respić 
+- spawn obs/monety co gametick a nie całkowicie randomowo
+- dodać baner wyspa slodowa
 
 ## kosmetyczne
 - przesuwanie sie elementów tła i dodać jakieś losowe
@@ -16,4 +15,3 @@ na kolejne zaj 20ktorys:
 - dodać muzykę i efekty dźwiękowe? 
 - wyjazd auta jako start
 - game over jako sfreezowany ekran mapy?
-- zrobic lepszy hitbox - obrot punktow o punkt
