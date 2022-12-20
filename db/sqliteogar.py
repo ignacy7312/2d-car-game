@@ -208,9 +208,10 @@ class DatabaseUtil():
         self.connection.commit()
         
 if __name__ == '__main__':
-    #sd = DatabaseUtil()
+    sd = DatabaseUtil()
     #sd.lock_cars()
     #sd.set_coins(300)
+    sd.set_username('uzytkownik')
     print('123')
     #sd.update_highscore(200)
     

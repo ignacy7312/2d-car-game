@@ -62,5 +62,5 @@ class Menu(GameScreen):
             # tu powinien zmienić się stan maszyny stanów na game (powinna się zacząć gra)
         
         if self.stats_button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
-            return None
+            return 5
             # tu powinien zmienić się stan muzyki na off ale nie ma jeszcze muzyki

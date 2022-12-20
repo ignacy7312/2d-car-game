@@ -3,7 +3,7 @@ from enum import Enum
 
 import settings
 from db.storagedriver import StorageDriver
-from screen import menu_module, garage_module, game_over_module, map_module
+from screen import menu_module, garage_module, game_over_module, map_module, stats_module
 
 
 """
@@ -24,6 +24,7 @@ class GameState():
         GAME = 2
         GAME_OVER = 3
         GARAGE = 4
+        STATS = 5
     
     
     def __init__(self, w, h):
@@ -73,10 +74,8 @@ class GameAgent(GameState):
     def change_state(self, next_state : GameState.State):
         # funckja przyjmuje jako argument kolejny stan, który ma nastąpić 
         # i zmienia aktualny stan na kolejny
-        if next_state == GameState.State.MENU:
-            if self.curr_state != GameState.State.GAME_OVER:
-                self.selected_player = self.curr_state_obj.garage_screen.get_selected_car()                
-            
+        if next_state == GameState.State.MENU:               
+            self.selected_player = self.storage_driver.get_current_car()
             self.curr_state_obj = MenuState(self.w, self.h)
             self.curr_state = GameState.State.MENU
         
@@ -86,6 +85,7 @@ class GameAgent(GameState):
             self.curr_state = GameState.State.GAME
         
         if next_state == GameState.State.GAME_OVER:
+            self.storage_driver.update_games_played()
             self.curr_state_obj = GameOverState(self.w, self.h, self.curr_state_obj.game_screen.score,
                                                     self.curr_state_obj.game_screen.player1.game_money) #,self.database)
             self.curr_state = GameState.State.GAME_OVER
@@ -93,6 +93,10 @@ class GameAgent(GameState):
         if next_state == GameState.State.GARAGE:
             self.curr_state_obj = GarageState(self.w, self.h)
             self.curr_state = GameState.State.GARAGE
+            
+        if next_state == GameState.State.STATS:
+            self.curr_state_obj = StatsScreenState(self.w, self.h)
+            self.curr_state = GameState.State.STATS
         
     def execute(self):  
         # wykonanie akcji aktualnie obowiązującego stanu
@@ -212,6 +216,10 @@ class MenuState(GameState):
         if self.curr_state == GameState.State.MENU and self.menu_screen.click_button() == 4:
             return GameState.State.GARAGE
         
+        # zmień na garaż
+        if self.curr_state == GameState.State.MENU and self.menu_screen.click_button() == 5:
+            return GameState.State.STATS
+        
         return None
         
 """
@@ -239,6 +247,29 @@ class GarageState(GameState):
     def get_next_state(self) -> GameState.State:
         # zmień na menu
         if self.curr_state == GameState.State.GARAGE and self.garage_screen.click_menu_button() == 1:
+            return GameState.State.MENU
+        return None
+    
+"""
+Klasa stanu ekranu statystyk
+"""
+class StatsScreenState(GameState):
+    def __init__(self, w, h):
+        super().__init__(w, h)
+        self.curr_state = GameState.State.STATS
+        self.stats_screen = stats_module.StatsScreen(self.w, self.h)
+        
+    
+
+    def handle(self):
+
+        self.stats_screen.display()
+        self.stats_screen.display_buttons()
+
+
+    def get_next_state(self) -> GameState.State:
+        # zmień na menu
+        if self.curr_state == GameState.State.STATS and self.stats_screen.click_menu_button() == 1:
             return GameState.State.MENU
         return None
     
