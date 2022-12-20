@@ -30,7 +30,7 @@ class StatsScreen(GameScreen):
         self.games_played_txt = self.font.render(f"Total games played: {self.games_played}", True, 'black')
         self.games_played_txt_rect = self.games_played_txt.get_rect(center = (self.w//2, 200))
         
-        self.ttig_txt = self.font.render(f"Total time in game: {self.time_in_game}", True, 'black')
+        self.ttig_txt = self.font.render(f"Total time in game: {self.time_in_game} sec", True, 'black')
         self.ttig_txt_rect = self.ttig_txt.get_rect(center = (self.w//2, 250))
         
         self.menu_button = pygame.image.load('textures/buttons/menubtn.png').convert_alpha()

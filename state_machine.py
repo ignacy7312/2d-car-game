@@ -68,6 +68,8 @@ class GameAgent(GameState):
         self.curr_state_obj = MenuState(self.w, self.h) # pierwotnym stanem jest menu
 
         self.selected_player = self.storage_driver.get_current_car()
+        # counts time taken by one game
+        self.game_timer = 0
 
 
 
@@ -83,12 +85,16 @@ class GameAgent(GameState):
             
             self.curr_state_obj = GameActiveState(self.w, self.h, self.selected_player)
             self.curr_state = GameState.State.GAME
+            self.game_timer = pygame.time.get_ticks()
         
         if next_state == GameState.State.GAME_OVER:
             self.storage_driver.update_games_played()
             self.curr_state_obj = GameOverState(self.w, self.h, self.curr_state_obj.game_screen.score,
                                                     self.curr_state_obj.game_screen.player1.game_money) #,self.database)
             self.curr_state = GameState.State.GAME_OVER
+            self.game_timer -= pygame.time.get_ticks()
+            self.game_timer *= -1
+            self.storage_driver.update_total_time_ig(round(self.game_timer, -3)) 
             
         if next_state == GameState.State.GARAGE:
             self.curr_state_obj = GarageState(self.w, self.h)
