@@ -41,6 +41,7 @@ class Player(Character):
         
         self.image = self.normal_image
         self.rect = self.normal_rect
+        self.mask = self.get_mask()
         
         # !!!! rect powinien być tylko jeden, nie ma potrzeby na więcej
         
@@ -70,12 +71,14 @@ class Player(Character):
             # jezeli wciska sie 'a' i nie ma kolizji z lewą stroną
             self.x -= int(self.dx)
             self.image = self.turnleft_image
+            self.mask = self.get_mask()
             #self.rect = self.turn_rect
             print(self.x, self.rect.x)
         elif pygame.key.get_pressed()[pygame.K_d] and not collision[1]:
             # jezeli wciska sie 'd' i nie ma kolizji z prawą stroną
             self.x += int(self.dx)
             self.image = self.turnright_image
+            self.mask = self.get_mask()
             print(self.x, self.rect.x)
             #self.rect = self.create_player_rect()
             #self.rect = pygame.Rect((self.x+100, self.y), (50, 100))
@@ -88,6 +91,7 @@ class Player(Character):
             else: """
             self.image = self.normal_image
             self.rect = self.normal_rect
+            self.mask = self.get_mask()
             print(self.x, self.rect.x)
                 
             

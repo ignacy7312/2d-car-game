@@ -198,7 +198,7 @@ class DatabaseUtil():
         self.cursor.execute(sql, (car_id, ))
         self.connection.commit()
     
-    """ TYCH PONIZEJ UZYWAC TYLKO W SKRAJNYCH WYPADKACH"""
+    ''' TYCH PONIZEJ UZYWAC TYLKO W SKRAJNYCH WYPADKACH '''
 
     def lock_cars(self):
         sql = f''' UPDATE cars
@@ -206,7 +206,7 @@ class DatabaseUtil():
         self.cursor.execute(sql, (0, 1 ))
         self.cursor.execute(sql, (0, 2 ))
         self.connection.commit()
-        
+
 if __name__ == '__main__':
     sd = DatabaseUtil()
     #sd.lock_cars()

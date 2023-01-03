@@ -1,6 +1,6 @@
-import pygame
 import sys
 import os
+import pygame
 import psutil
 
 import settings
@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
 
 # Na poniższe nie patrzeć, zostaje żeby się nie zgubiło w razie czego
-"""resolutuion_option = 1
+'''resolutuion_option = 1
 game_screen_res = settings.screen_resolution[resolutuion_option]
 SCREEN_WIDTH = game_screen_res[0]
 SCREEN_HEIGHT = game_screen_res[1]
@@ -73,6 +73,6 @@ car_scale = settings.car_rescale[resolutuion_option]
 # background = pygame.transform.scale(background, game_screen_res)
 # car_surface = pygame.image.load('textures/auto.png')
 # car_surface = pygame.transform.rotozoom(car_surface, 180, car_scale)
-# car_rectangle = car_surface.get_rect(center = (game_screen_res[0] // 2, game_screen_res[1]  - 50))"""
+# car_rectangle = car_surface.get_rect(center = (game_screen_res[0] // 2, game_screen_res[1]  - 50))'''
 
 

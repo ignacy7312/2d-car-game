@@ -47,7 +47,10 @@ class Map(GameScreen):
 
         self.coins = []
         
-        
+        self.playersprite = pygame.sprite.GroupSingle(self.player1)
+
+
+
     def display_bg(self):
         # wyświetl tło 
         #self.background = pygame.transform.scale(self.background, (self.w, self.h))
@@ -68,18 +71,17 @@ class Map(GameScreen):
 
     # -------------DEBUG------------------------
     def display_debug_rect(self):
-        pygame.draw.rect(self.screen, 'green', self.player1.rect, 2)
-        for obstacle in self.obstacles:
-            pygame.draw.rect(self.screen, 'blue', obstacle.rect, 2)
+    
+        for point in self.player1.mask.outline():
+            x = point[0] + self.player1.x
+            y = point[1] + self.player1.y - 55
+            pygame.draw.circle(self.screen, 'green', (x,y), 2)
 
-        """rp = self.player1.get_mask().get_rect()
-        pygame.draw.rect(self.screen, 'green', rp, 2)
         for obstacle in self.obstacles:
-            ro = obstacle.get_mask().get_rect()    
-            pygame.draw.rect(self.screen, 'blue', ro, 2)"""
-        """print(self.player1.x, self.player1.y)
-        olist = self.player1.get_mask().outline()
-        pygame.draw.lines(self.screen, 'green' ,1,olist)"""
+            for point in obstacle.mask.outline():
+                x = point[0] + obstacle.x - 28
+                y = point[1] + obstacle.y
+                pygame.draw.circle(self.screen, 'blue', (x,y), 2)
 
 
 
@@ -220,31 +222,17 @@ class Map(GameScreen):
 
     def check_for_obs_collision(self) -> bool:
         # sprawdza czy występuje kolizja gracza z przeszkodą używając maski - pixel perferct collision
-        # brak problemów z hitboxami
-        player_mask = self.player1.get_mask()
-        # p_left_offset = (self.player1.x )
-        # p_right_offset = 
         col = False
+       
         for obstacle in self.obstacles:
-            obstacle_mask = obstacle.get_mask()
-            p_left_offset = (self.player1.x - obstacle.rect.topright[0], abs(obstacle.y - round(self.player1.y)))
-            p_right_offset = (obstacle.x - self.player1.rect.topright[0], abs(obstacle.y - round(self.player1.y)))
-            # p_offset = (abs(self.player1.x - obstacle.x), abs(obstacle.y - round(self.player1.y)))
+            # wykorzystanie pygame sprite żeby nie kombinować z dziwnymi obliczeniami
+            obs = pygame.sprite.GroupSingle(obstacle) 
             
-            
-            if (player_mask.overlap(obstacle_mask, p_left_offset) and p_left_offset[0] < 0) or (player_mask.overlap(obstacle_mask, p_right_offset) and p_right_offset[0] < 0):
-                print()
-                print(f'overlap: {player_mask.overlap(obstacle_mask, p_left_offset)}, {player_mask.overlap(obstacle_mask, p_right_offset)}')
+            if pygame.sprite.spritecollide(self.playersprite.sprite, obs, False, pygame.sprite.collide_mask):
                 col = True
 
-            #if player_mask.overlap(obstacle_mask, p_offset):
-            #    col = True
-
             if col and (not self.player1.invincible) and (not self.player1.is_colliding):
-                # print()
-                print (f"Left offset: {p_left_offset}, Right offset: {p_right_offset}")
-                print (f"Player rectangle pos left: {self.player1.rect.topleft}, Player rectangle pos right: {self.player1.rect.topright}")
-                print (f"Obs rectangle pos left: {obstacle.rect.topleft}, Obs rectangle pos right: {obstacle.rect.topright}")
+
                 self.player1.blink_invinc_end_time = pygame.time.get_ticks() + 1000
                 self.player1.hp -= 1
                 self.obstacles.remove(obstacle)
@@ -254,7 +242,6 @@ class Map(GameScreen):
                 # czyli ta funkcja zwroci True jezeli gracz straci hp - gra ma sie skonczyc
                 return self.life.checking_hp(self.player1)
             
-        # print(col)
         self.player1.is_colliding = False
         return False
 

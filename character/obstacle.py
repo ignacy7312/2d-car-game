@@ -49,6 +49,7 @@ class DynamicObstacle(Obstacle):
         super().__init__()
         self.image = pygame.image.load(self.get_obstacle()).convert_alpha()
         self.rect = self.image.get_rect(center = (self.x, self.y))
+        self.mask = self.get_mask()
         self.dy = 8
         
     def get_obstacle(self) -> str:
@@ -62,6 +63,7 @@ class StaticObstacle(Obstacle):
         super().__init__()
         self.image = pygame.image.load(self.get_obstacle()).convert_alpha()
         self.rect = self.image.get_rect(center = (self.x, self.y))
+        self.mask = pygame.mask.from_surface(self.image)
         self.dy = 5 # wartość równa scrollowi mapy - wtedy wygląda jakby się nie ruszało
         
     def get_obstacle(self) -> str:

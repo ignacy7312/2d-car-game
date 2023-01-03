@@ -23,6 +23,7 @@ class Character(pygame.sprite.Sprite):
         self.y = y
         self.image = None # bo nie można tylko zadeklarować zmiennej
         self.rect = None # j.w.
+        self.mask = None
 
     def load_and_rescale(self, path : str, scale : float, angle : int = 0 ) -> pygame.image:
             # pobiera path do grafiki, skalę oraz kąt, o jaki ją obraca

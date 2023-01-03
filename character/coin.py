@@ -11,4 +11,5 @@ class Coin(Obstacle):
         super().__init__()
         self.image = pygame.image.load('textures/moneta.png').convert_alpha()
         self.rect = self.image.get_rect(center = (self.x, self.y))
+        self.mask = self.get_mask()
         self.dy = 5

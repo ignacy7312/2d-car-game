@@ -6,8 +6,8 @@ costam na po swietach
 - DODAC TABELE GAMES KTORA BEDZIE ZBIERAŁA WSZYSTKIE GRY DLA DANEGO UZYTKOWNIKA
 - SUMA MONET, SUMA CZASU SPĘDZONEGO, ITP JAKO WYKOZYSTANIE POLECENIA SUMY Z DB
 
+- multithreading ???? - tak dla zabawy
 - skrypt na zrobinie umla z kodu 
-- naprawić hitbox - pygame.mask
 - zoptymalizowac spawn obstacle/monety: napisać listę warunków kiedy co może sie respić 
 - spawn obs/monety co gametick a nie całkowicie randomowo
 - dodać baner wyspa slodowa
