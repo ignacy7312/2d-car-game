@@ -15,7 +15,7 @@ class StorageDriver(sqliteogar.DatabaseUtil):
         
     def set_and_save_values(self, kwargs):
         '''
-        Funkcja pobiera dowolne argumenty i jeżeli takie istnieją w bazie danych, to je opierdala
+        Funkcja pobiera dowolne argumenty i jeżeli takie istnieją w bazie danych, to je 
         w sensie zapisuje itp
         '''
         for arg in kwargs.keys():
