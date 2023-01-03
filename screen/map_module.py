@@ -1,5 +1,4 @@
 import pygame
-import math
 import random
 
 
@@ -11,7 +10,7 @@ from character.obstacle import StaticObstacle, DynamicObstacle
 from character.coin import Coin
 
 from db.storagedriver import StorageDriver
-
+from pygame import mixer
 class Map(GameScreen):
 
     """
@@ -201,6 +200,8 @@ class Map(GameScreen):
             if pygame.Rect.colliderect(coin.rect, self.player1.rect):
                 self.player1.game_money += 1
                 self.coins.remove(coin)
+                self.coinsound = mixer.Sound("./sounds/money.wav")
+                self.coinsound.play()
                 del coin
     
 
@@ -237,6 +238,8 @@ class Map(GameScreen):
                 self.player1.hp -= 1
                 self.obstacles.remove(obstacle)
                 self.player1.is_colliding = True
+                self.cj = mixer.Sound("./sounds/CJ.wav")
+                self.cj.play()
                 del obstacle
                 # zwraca funkcję sprawdzającą hp, która zwraca True jeżeli HP == 0,
                 # czyli ta funkcja zwroci True jezeli gracz straci hp - gra ma sie skonczyc
@@ -244,7 +247,6 @@ class Map(GameScreen):
             
         self.player1.is_colliding = False
         return False
-
 
 
     def toggle_player_inivincible(self):

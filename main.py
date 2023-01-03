@@ -12,7 +12,7 @@ class Game:
     """
     Główna klasa gry
     w,h - rozdzielczość ekranu
-    
+    a
     """
     pygame.init()
     pygame.display.set_caption('HIGH RIDE')

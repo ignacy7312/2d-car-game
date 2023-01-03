@@ -28,7 +28,8 @@ class GameScreen():
 
     def rescale_background(self):
         self.background = pygame.transform.scale(self.background, (self.w, self.h)) 
-        
+
+
         
 
 
