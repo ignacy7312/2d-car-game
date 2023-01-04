@@ -3,7 +3,7 @@ from enum import Enum
 
 import settings
 from db.storagedriver import StorageDriver
-from screen import menu_module, garage_module, game_over_module, map_module, stats_module
+from screen import menu_module, garage_module, game_over_module, map_module, stats_module, music
 from pygame import mixer
 
 """
@@ -65,8 +65,8 @@ class GameAgent(GameState):
         #self.menu_obj = MenuState(self.w, self.h)
         self.storage_driver = StorageDriver()
         self.curr_state_obj = MenuState(self.w, self.h) # pierwotnym stanem jest menu
-        mixer.music.load("./sounds/elevator.wav")  # muzyka
-        mixer.music.play(-1)
+        self.audio=music.Music()
+        self.audio.music_play("./sounds/elevator.wav")
 
         self.selected_player = self.storage_driver.get_current_car()
         # counts time taken by one game
@@ -88,8 +88,7 @@ class GameAgent(GameState):
             self.curr_state_obj = GameActiveState(self.w, self.h, self.selected_player)
             self.curr_state = GameState.State.GAME
             self.game_timer = pygame.time.get_ticks()
-            mixer.music.load("./sounds/tokyo.wav")  # muzyka
-            mixer.music.play(-1)
+            self.audio.music_play("./sounds/tokyo.wav")
 
         if next_state == GameState.State.GAME_OVER:
             self.storage_driver.update_games_played()
@@ -99,8 +98,7 @@ class GameAgent(GameState):
             self.game_timer -= pygame.time.get_ticks()
             self.game_timer *= -1
             self.storage_driver.update_total_time_ig(round(self.game_timer, -3))
-            mixer.music.load("./sounds/elevator.wav")  # muzyka
-            mixer.music.play(-1)
+            self.audio.music_play("./sounds/elevator.wav")
             
         if next_state == GameState.State.GARAGE:
             self.curr_state_obj = GarageState(self.w, self.h)
