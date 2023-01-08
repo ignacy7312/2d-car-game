@@ -38,10 +38,17 @@ class DatabaseUtil():
         self.cursor.execute(sql, cd)
         self.connection.commit()
 
+    def create_game_row(self, gd):
+        '''Dodaj informacje o zagranej grze'''
+        sql = ''' INSERT INTO games(user_id, car_id, duration, coins_collected, score)
+              VALUES(?,?,?,?,?) '''
+        self.cursor.execute(sql, gd)
+        self.connection.commit()
+
 
     def get_current_user_id(self):
         ''' Funkcja zwraca id aktualnego użytkownika '''
-        id_exec = '''SELECT user_id FROM mapowania
+        id_exec = '''SELECT user_id FROM cur_user_car
             '''
         return self.cursor.execute(id_exec).fetchone()[0]
     
@@ -49,6 +56,14 @@ class DatabaseUtil():
         ''' Funkcja zwraca ilość monet aktualnego użytkownika oraz jego id'''
 
         sql = '''SELECT coins FROM user WHERE id = ?
+        '''
+        idx = self.get_current_user_id()
+        
+        return self.cursor.execute(sql, (idx,)).fetchone()[0], idx
+
+    def get_total_coins(self):
+        ''' Funkcja zwraca całkowitą ilość monet zebraną przez aktualnego użytkownika oraz jego id'''
+        sql = '''SELECT SUM(coins_collected) FROM games WHERE user_id = ?
         '''
         idx = self.get_current_user_id()
         
@@ -99,10 +114,20 @@ class DatabaseUtil():
             self.cursor.execute(sql, (score, idx ))
             self.connection.commit()
             
-    def get_games_played(self):
+    def get_games_played2(self):
         ''' Funkcja zwraca liczbe zagranych gier aktualnego użytkownika oraz jego id'''
         
         sql = '''SELECT games_played FROM user WHERE id = ?
+        '''
+        idx = self.get_current_user_id()
+        
+        return self.cursor.execute(sql, (idx,)).fetchone()[0], idx
+
+    def get_games_played(self):
+        ''' Wykorzystanie funkcji bazy danych 
+        Funkcja zwraca liczbe zagranych gier aktualnego użytkownika oraz jego id'''
+        
+        sql = '''SELECT COUNT (*) FROM games WHERE user_id = ?
         '''
         idx = self.get_current_user_id()
         
@@ -183,17 +208,17 @@ class DatabaseUtil():
         return self.cursor.execute(sql, (car_id,)).fetchone()[0]
     
     
-    '''ponizej funkcje do mapowania'''
+    '''ponizej funkcje do cur_user_car'''
     def get_current_car(self):
         ''' Funkcja zwraca aktualnie wybrane auto przez aktualnego uzytkownika'''
         
-        sql = '''SELECT car_id FROM mapowania'''
+        sql = '''SELECT car_id FROM cur_user_car'''
         
         return self.cursor.execute(sql).fetchone()[0]
     
     def set_current_car(self, car_id):
         ''' Funkcja ustawia auto wybrane przez aktualnego uzytkownika'''
-        sql = ''' UPDATE mapowania
+        sql = ''' UPDATE cur_user_car
                 SET car_id = ?'''
         self.cursor.execute(sql, (car_id, ))
         self.connection.commit()

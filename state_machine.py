@@ -92,11 +92,11 @@ class GameAgent(GameState):
 
         if next_state == GameState.State.GAME_OVER:
             self.storage_driver.update_games_played()
+            self.game_timer = pygame.time.get_ticks() - self.game_timer
             self.curr_state_obj = GameOverState(self.w, self.h, self.curr_state_obj.game_screen.score,
-                                                    self.curr_state_obj.game_screen.player1.game_money) #,self.database)
+                                                    self.curr_state_obj.game_screen.player1.game_money, round(self.game_timer, -3))
+            
             self.curr_state = GameState.State.GAME_OVER
-            self.game_timer -= pygame.time.get_ticks()
-            self.game_timer *= -1
             self.storage_driver.update_total_time_ig(round(self.game_timer, -3))
             self.audio.music_play("./sounds/elevator.wav")
             
@@ -162,12 +162,17 @@ Ze stanu GameOver można przejść do stanu Menu albo GameActive (rozpocząć ro
 jako argument przyjmuje także wynik uzyskany w poprzedniej grze
 """
 class GameOverState(GameActiveState):
-    def __init__(self, w, h, score, money):
+    def __init__(self, w, h, score, money, duration):
         super().__init__(w, h, GameAgent.SELECTED_PLAYER) # self.selected_player)
         self.game_over_screen = game_over_module.GameOverScreen(self.w, self.h) 
         self.curr_state = GameState.State.GAME_OVER
         self.score = score
         self.money = money
+        self.duration = duration
+
+        self.storage_driver = StorageDriver()
+        self.current_player_id = self.storage_driver.get_current_user_id()
+        self.current_car_id = self.storage_driver.get_current_car()
 
 
     def handle(self):
@@ -175,6 +180,7 @@ class GameOverState(GameActiveState):
         self.game_over_screen.display_bg()
         self.game_over_screen.display_score(self.score)
         self.game_over_screen.display_money_earned(self.money)
+        
     
         
 
@@ -183,23 +189,27 @@ class GameOverState(GameActiveState):
         if self.curr_state == GameState.State.GAME_OVER and pygame.key.get_pressed()[pygame.K_SPACE]:
             self.save_hs()
             self.save_money()
+            self.save_gamedata()
             return GameState.State.GAME
 
         #zmień na stan menu 
         if self.curr_state == GameState.State.GAME_OVER and pygame.key.get_pressed()[pygame.K_m]:
             self.save_hs()
             self.save_money()
+            self.save_gamedata()
             return GameState.State.MENU
         return None
 
     
     def save_hs(self):
         if self.score > self.game_over_screen.high_score:
-            self.storage_driver = StorageDriver(score=self.score)
-    
+            self.storage_driver.update_highscore(self.score)
     
     def save_money(self):
-        self.storage_driver = StorageDriver(coins=self.money)
+        self.storage_driver.update_coins(self.money)
+
+    def save_gamedata(self):
+        self.storage_driver.create_game_row((self.current_player_id, self.current_car_id, self.duration, self.money, self.score)) 
 
 """
 Klasa stanu menu.
