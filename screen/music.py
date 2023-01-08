@@ -4,19 +4,14 @@ from pygame import mixer
 class Music():
 
     def __init__(self):
-        self.path = None
-        self.soundplay = None
         print("DUpa")
 
     def music_play(self, musicpath):
-        if musicpath == 1:
-            self.path = "./../sounds/elevator.wav"
-        elif musicpath == 2:
-            self.path = "./../sounds/tokyo.wav"
-
-        mixer.music.load(self.path)  # muzyka
+        mixer.music.load(musicpath)  # muzyka
+        mixer.music.set_volume(0.4)
         mixer.music.play(-1)
 
-    def sound_play(self, soundpath):
+    def sound_play(self,vol, soundpath):
         self.soundplay = mixer.Sound(soundpath)
+        mixer.Sound.set_volume(self.soundplay, vol)
         self.soundplay.play()

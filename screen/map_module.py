@@ -8,6 +8,7 @@ from screen.game_screen_class import GameScreen
 from character.player import Player
 from character.obstacle import StaticObstacle, DynamicObstacle
 from character.coin import Coin
+from screen import music
 
 from db.storagedriver import StorageDriver
 from pygame import mixer
@@ -34,7 +35,7 @@ class Map(GameScreen):
         self.player1 = Player(350,670, selected_player) # wstępna pozycja
         self.obstacles = []
         self.life= Life(w, h)
-
+        self.sounds=music.Music()
         self.game_over = False
         
         self.score = 0
@@ -200,8 +201,7 @@ class Map(GameScreen):
             if pygame.Rect.colliderect(coin.rect, self.player1.rect):
                 self.player1.game_money += 1
                 self.coins.remove(coin)
-                self.coinsound = mixer.Sound("./sounds/money.wav")
-                self.coinsound.play()
+                self.sounds.sound_play(2,"./sounds/money.wav")
                 del coin
     
 
@@ -238,8 +238,6 @@ class Map(GameScreen):
                 self.player1.hp -= 1
                 self.obstacles.remove(obstacle)
                 self.player1.is_colliding = True
-                self.cj = mixer.Sound("./sounds/CJ.wav")
-                self.cj.play()
                 del obstacle
                 # zwraca funkcję sprawdzającą hp, która zwraca True jeżeli HP == 0,
                 # czyli ta funkcja zwroci True jezeli gracz straci hp - gra ma sie skonczyc
@@ -311,6 +309,7 @@ class Life():
         self.hp1 = pygame.transform.rotozoom(self.hp1, 0, 0.15)
         self.hp2 = pygame.transform.rotozoom(self.hp2, 0, 0.15)
         self.hp3 = pygame.transform.rotozoom(self.hp3, 0, 0.15)
+        self.sound=music.Music()
 
     def checking_hp(self, player1) -> bool:
         if (player1.hp == 2):
@@ -318,17 +317,20 @@ class Life():
             self.hp1 = pygame.image.load('textures/kosa.png').convert_alpha()
             self.hp1_rect = self.hp1.get_rect(center=(self.w - 80, self.h - 750))
             self.hp1 = pygame.transform.rotozoom(self.hp1, 0, 0.40)
+            self.sound.sound_play(0.5,"./sounds/CJ.wav")
             return False
         elif (player1.hp == 1):
             # print('1')
             self.hp2 = pygame.image.load('textures/kosa.png').convert_alpha()
             self.hp2_rect = self.hp2.get_rect(center=(self.w - 40, self.h - 750))
             self.hp2 = pygame.transform.rotozoom(self.hp2, 0, 0.40)
+            self.sound.sound_play(0.5,"./sounds/CJ1.wav")
             return False
         elif (player1.hp == 0):
             self.hp3 = pygame.image.load('textures/kosa.png').convert_alpha()
             self.hp3_rect = self.hp3.get_rect(center=(self.w, self.h - 750))
             self.hp3 = pygame.transform.rotozoom(self.hp3, 0, 0.40)
+            self.sound.sound_play(0.5,"./sounds/CJ2.wav")
             # print('deat')
             return True
 

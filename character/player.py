@@ -72,27 +72,19 @@ class Player(Character):
             self.x -= int(self.dx)
             self.image = self.turnleft_image
             self.mask = self.get_mask()
-            #self.rect = self.turn_rect
-            print(self.x, self.rect.x)
+           
         elif pygame.key.get_pressed()[pygame.K_d] and not collision[1]:
             # jezeli wciska sie 'd' i nie ma kolizji z prawą stroną
             self.x += int(self.dx)
             self.image = self.turnright_image
             self.mask = self.get_mask()
-            print(self.x, self.rect.x)
-            #self.rect = self.create_player_rect()
-            #self.rect = pygame.Rect((self.x+100, self.y), (50, 100))
+            
             
         else:
             # jeżeli auto jedzie prosto
-            """if self.y > 665:
-                self.y -= 5
-                self.rect = self.image.get_rect(center = (self.x, self.y))
-            else: """
             self.image = self.normal_image
             self.rect = self.normal_rect
             self.mask = self.get_mask()
-            print(self.x, self.rect.x)
                 
             
             
