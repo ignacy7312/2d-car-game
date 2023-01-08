@@ -1,3 +1,4 @@
+import random
 import sqlite3
 from sqlite3 import Error
 
@@ -23,12 +24,30 @@ class DatabaseUtil():
         
         return conn
     
-    def create_user(self, ud):
-        '''stworz nowego uzytkownika - nowy save'''
-        sql = ''' INSERT INTO user(id, name, high_score, coins, games_played, time_spent)
-                VALUES(?,?,?,?,?,?) '''
+    def get_all_user_idx(self):
+        ''' zbierz wszystkie id uzytkownikow'''
+        sql = ''' SELECT id FROM user'''
+        getval = lambda fixit: fixit[0]
+        return [getval(i) for i in self.cursor.execute(sql).fetchall()]
 
-        self.cursor.execute(sql, ud)
+    def get_all_usernames(self):
+        ''' zwroc wszystkie nazwy uzytkownika'''
+        sql = ''' SELECT name FROM user'''
+        getval = lambda fixit: fixit[0]
+        return [getval(i) for i in self.cursor.execute(sql).fetchall()]
+
+    def create_user(self, username):
+        '''stworz nowego uzytkownika - wiersz w tabeli user'''
+        id = max(self.get_all_user_idx()) + 1
+        sql = f''' INSERT INTO user(id, name, high_score, coins, games_played, time_spent)
+                VALUES(?,?,0,0,0,0) '''
+        self.cursor.execute(sql, (id, username))
+        self.connection.commit()
+
+    def delete_user(self, id):
+        ''' usuń użytkownika  - wiersz z tabeli user'''
+        sql = f'''DELETE FROM user WHERE id = {id};'''
+        self.cursor.execute(sql)
         self.connection.commit()
 
     def create_car(self, cd):
@@ -48,8 +67,7 @@ class DatabaseUtil():
 
     def get_current_user_id(self):
         ''' Funkcja zwraca id aktualnego użytkownika '''
-        id_exec = '''SELECT user_id FROM cur_user_car
-            '''
+        id_exec = '''SELECT user_id FROM cur_user_car '''
         return self.cursor.execute(id_exec).fetchone()[0]
     
     def get_coins(self):
@@ -160,7 +178,8 @@ class DatabaseUtil():
         self.cursor.execute(sql, (time_updated, idx ))
         self.connection.commit()
 
-    def get_username(self):
+
+    def get_current_username(self):
         ''' Funkcja zwraca nazwe aktualnego użytkownika oraz jego id'''
         
         sql = '''SELECT name FROM user WHERE id = ?
@@ -233,10 +252,11 @@ class DatabaseUtil():
         self.connection.commit()
 
 if __name__ == '__main__':
-    sd = DatabaseUtil()
+    #sd = DatabaseUtil()
     #sd.lock_cars()
     #sd.set_coins(300)
-    sd.set_username('uzytkownik')
-    print('123')
+    #sd.set_username('uzytkownik')
+    #print('123')
     #sd.update_highscore(200)
+    print(sd.get_all_user_idx())
     

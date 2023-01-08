@@ -17,7 +17,7 @@ class StatsScreen(GameScreen):
         self.high_score = self.storage_driver.get_highscore()[0]
         self.games_played = self.storage_driver.get_games_played()[0]
         self.time_in_game = self.storage_driver.get_total_time_ig()[0]
-        self.username = self.storage_driver.get_username()
+        self.username = self.storage_driver.get_current_username()
         self.total_coins_collected = self.storage_driver.get_total_coins()[0]
         
         self.username_txt = self.font.render(f"Your stats, {self.username}", True, 'black')

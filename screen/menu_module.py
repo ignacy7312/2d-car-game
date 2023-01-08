@@ -21,9 +21,12 @@ class Menu(GameScreen):
         self.start_button_rect = self.start_button.get_rect(center = (300, 320))
         self.stats_button = pygame.image.load('textures/buttons/statsbtn.png').convert_alpha()
         self.stats_button_rect = self.stats_button.get_rect(center = (300, 620))
+        self.change_user_button = pygame.image.load('textures/buttons/cubtn.png').convert_alpha()
+        self.change_user_button_rect = self.change_user_button.get_rect(center = (300, 750))
+
 
         self.high_score = self.storage_driver.get_highscore()[0]
-        self.username = self.storage_driver.get_username()
+        self.username = self.storage_driver.get_current_username()
         
         # na tym etapie juz useless ale zostawiam bo moze sie przydac
         # self.text1 = self.font.render("press SPACE to start", True, 'black')
@@ -54,6 +57,7 @@ class Menu(GameScreen):
         self.screen.blit(self.garage_button, self.garage_button_rect)
         self.screen.blit(self.start_button, self.start_button_rect)
         self.screen.blit(self.stats_button, self.stats_button_rect)
+        self.screen.blit(self.change_user_button, self.change_user_button_rect)
 
     def click_button(self) -> int:
         # !!!! zwraca odpowiedni numer stanu, zgodny z GameState.State
@@ -70,3 +74,7 @@ class Menu(GameScreen):
         if self.stats_button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
             return 5
             # tu powinien zmienić się stan muzyki na off ale nie ma jeszcze muzyki
+
+        if self.change_user_button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+            return 6
+            # wejście do ekranu zmiany użytkownika
