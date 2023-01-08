@@ -18,8 +18,7 @@ class StatsScreen(GameScreen):
         self.games_played = self.storage_driver.get_games_played()[0]
         self.time_in_game = self.storage_driver.get_total_time_ig()[0]
         self.username = self.storage_driver.get_username()
-        # w sumie mozna dodac do db
-        self.total_coins_collected = None
+        self.total_coins_collected = self.storage_driver.get_total_coins()[0]
         
         self.username_txt = self.font.render(f"Your stats, {self.username}", True, 'black')
         self.username_txt_rect = self.username_txt.get_rect(center = (self.w//2, 100))
@@ -32,9 +31,14 @@ class StatsScreen(GameScreen):
         
         self.ttig_txt = self.font.render(f"Total time in game: {self.time_in_game} sec", True, 'black')
         self.ttig_txt_rect = self.ttig_txt.get_rect(center = (self.w//2, 250))
+
+        self.totalcoins_txt = self.font.render(f"Total coins collected: {self.total_coins_collected}", True, 'gold')
+        self.totalcoins_txt_rect = self.totalcoins_txt.get_rect(center = (self.w//2, 300))
         
         self.menu_button = pygame.image.load('textures/buttons/menubtn.png').convert_alpha()
         self.menu_button_rect = self.menu_button.get_rect(center = (300, 720))
+
+        
         
         
     def display_buttons(self):
@@ -46,6 +50,7 @@ class StatsScreen(GameScreen):
         self.screen.blit(self.hs_txt, self.hs_txt_rect)
         self.screen.blit(self.games_played_txt, self.games_played_txt_rect)
         self.screen.blit(self.ttig_txt, self.ttig_txt_rect)
+        self.screen.blit(self.totalcoins_txt, self.totalcoins_txt_rect)
         
     def display(self):
         self.screen.fill('grey')

@@ -23,6 +23,7 @@ class Menu(GameScreen):
         self.stats_button_rect = self.stats_button.get_rect(center = (300, 620))
 
         self.high_score = self.storage_driver.get_highscore()[0]
+        self.username = self.storage_driver.get_username()
         
         # na tym etapie juz useless ale zostawiam bo moze sie przydac
         # self.text1 = self.font.render("press SPACE to start", True, 'black')
@@ -30,12 +31,16 @@ class Menu(GameScreen):
         # self.text2 = self.font.render("press ESC to go to the garage", True, 'black')
         # self.text_rect2 = self.text2.get_rect(center = (self.w//2, self.h//2 - 200))
         self.text1 = self.font.render("press SPACE to start", True, 'black')
-        self.text_rect1 = self.text1.get_rect(center = (self.w//2, 140))
+        self.text_rect1 = self.text1.get_rect(center = (self.w//2, 180))
         self.text2 = pygame.font.Font("textures/font.ttf", 30).render("WROCLAW MOST WANTED", True, 'black')
         self.text_rect2 = self.text2.get_rect(center = (self.w//2, 80))
-        # dodać HIGH SCORE
+
         self.text3 = self.font.render(f"CURRENT HIGH SCORE: {self.high_score}", True, 'black')
-        self.text_rect3 = self.text3.get_rect(center = (self.w//2, 180))
+        self.text_rect3 = self.text3.get_rect(center = (self.w//2, 220))
+
+        self.text4 = self.font.render(f"CURRENT USER: {self.username}", True, 'black')
+        self.text_rect4 = self.text4.get_rect(center = (self.w//2, 140))
+
 
 
     def display_menu_bg(self):
@@ -43,6 +48,7 @@ class Menu(GameScreen):
         self.screen.blit(self.text1, self.text_rect1)
         self.screen.blit(self.text2, self.text_rect2)
         self.screen.blit(self.text3, self.text_rect3)
+        self.screen.blit(self.text4, self.text_rect4)
 
     def display_buttons(self):
         self.screen.blit(self.garage_button, self.garage_button_rect)
