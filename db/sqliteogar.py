@@ -242,6 +242,13 @@ class DatabaseUtil():
         self.cursor.execute(sql, (car_id, ))
         self.connection.commit()
     
+    def set_current_user(self, uid):
+        ''' funkcja zmienia akutalnie wybranego uzytkownika w tabeli polaczeń'''
+        sql = ''' UPDATE cur_user_car
+                SET user_id = ?'''
+        self.cursor.execute(sql, (uid, ))
+        self.connection.commit()
+    
     ''' TYCH PONIZEJ UZYWAC TYLKO W SKRAJNYCH WYPADKACH '''
 
     def lock_cars(self):
@@ -258,8 +265,9 @@ if __name__ == '__main__':
     #sd.set_username('uzytkownik')
     #print('123')
     #sd.update_highscore(200)
-    #sd.create_user("krysztof")
+    #sd.create_user("test")
     #sd.delete_user(1)
     #sd.delete_user(2)
+    sd.set_current_user(10)
     print(sd.get_all_user_idx())
     

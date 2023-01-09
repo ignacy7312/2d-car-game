@@ -15,6 +15,7 @@ class UserSelectionScreen(GameScreen):
         
         self.storage_driver = StorageDriver()
         self.username_to_choose = ['imie1', 'imie2', 'imie3', 'imie4', 'imie5', 'imie8', 'imie7', 'imie6']
+        self.screenpos_y = [200, 300, 400]
         self.user_limit = 4
         
         
@@ -32,7 +33,7 @@ class UserSelectionScreen(GameScreen):
         self.user_count = len(self.userids)
         assert self.user_count > 0, f'pusta liczba uzytkownikow'
         
-        self.username_txt = self.font.render(f"Current User: {self.cur_username}", True, 'black')
+        self.username_txt = self.font.render(f"Current User: {self.cur_username}, id:{self.curr_id}", True, 'black')
         self.username_txt_rect = self.username_txt.get_rect(center = (self.w//2, 140))
         self.limit_txt = self.font.render(f"Limit of users: 3", True, 'black')
         self.limit_txt_rect = self.limit_txt.get_rect(center = (self.w//2, 40))
@@ -41,14 +42,18 @@ class UserSelectionScreen(GameScreen):
         
         self.add_user_button = pygame.image.load('textures/buttons/adduserbtn.png').convert_alpha()
         self.add_user_button_rect = self.add_user_button.get_rect(center = (300, 600))
-        self.delete_user_button = pygame.image.load('textures/buttons/deluserbtn.png').convert_alpha()
+        self.delete_user_button = pygame.image.load('textures/buttons/minideletebtn.png').convert_alpha()
         self.delete_user_button = pygame.transform.rotozoom(self.delete_user_button, 0, 0.7)
+        self.select_user_button = pygame.image.load('textures/buttons/miniselectbtn.png').convert_alpha()
+        self.select_user_button = pygame.transform.rotozoom(self.select_user_button, 0, 0.7)
         self.menu_button = pygame.image.load('textures/buttons/minimenubtn.png').convert_alpha()
         self.menu_button_rect = self.menu_button.get_rect(center = (500, 720))
 
 
         self.text_and_rects_to_display = self.generate_texts_and_rects()
         self.button_rects_to_display = self.generate_button_rects()
+        
+        
         
         # self.id_to_btn_height_map = dict( (k,m) for k,m in zip(self.userids,[(i[0], i[1]) for i in zip(self.text_and_rects_to_display, self.button_rects_to_display)]))
         
@@ -63,21 +68,26 @@ class UserSelectionScreen(GameScreen):
     def generate_texts_and_rects(self):
         assert self.user_id_map, f"brak userow i id"
         tmp = []
-        for i, j in (zip(self.user_id_map.keys(), self.user_id_map.values())):
-            if (i != self.curr_id):
-                utxt = self.font.render(f"User:{j}, id:{i}", True, 'black')
-                utxt_rect = utxt.get_rect(center = (200, 100 + i*100))
+        j = 0
+        for i in zip(self.user_id_map.keys(), self.user_id_map.values()):
+            if (i[0] != self.curr_id):
+                utxt = self.font.render(f"User:{i[1]}, id:{i[0]}", True, 'black')
+                utxt_rect = utxt.get_rect(center = (200, self.screenpos_y[j]))
                 tmp.append((utxt, utxt_rect))
+                j+=1
         return tmp
     
     def generate_button_rects(self):
         assert self.user_id_map, f"brak userow i id"
         tmp = []
+        j = 0
         for i in zip(self.user_id_map.keys(), self.user_id_map.values()):
             if (i[0] != self.curr_id):
-                bt_rect = (i[0], self.delete_user_button.get_rect(center=(500, 100+ i[0]*100)))
+                dbt_rect = (i[0], self.delete_user_button.get_rect(center=(450, self.screenpos_y[j])))
+                sbt_rect = (i[0], self.select_user_button.get_rect(center=(550, self.screenpos_y[j])))
                 #self.id_to_btn_height_map[200 + i*100] = i
-                tmp.append(bt_rect)
+                tmp.append((dbt_rect,sbt_rect))
+                j+=1
         return tmp
         
         
@@ -85,10 +95,15 @@ class UserSelectionScreen(GameScreen):
         self.userids = self.storage_driver.get_all_user_idx()
         self.usernames = self.storage_driver.get_all_usernames()
         self.user_count = len(self.userids)
+        self.cur_username = self.storage_driver.get_current_username()
+        self.curr_id = self.storage_driver.get_current_user_id()
         self.user_id_map = dict((i,j) for i,j in zip(self.userids, self.usernames))
         self.text_and_rects_to_display = self.generate_texts_and_rects()
         self.button_rects_to_display = self.generate_button_rects()    
         self.txt_to_bt_rect_map = [(i,j) for i,j in zip(self.text_and_rects_to_display, self.button_rects_to_display)]
+        
+        self.username_txt = self.font.render(f"Current User: {self.cur_username}, id:{self.curr_id}", True, 'black')
+        self.username_txt_rect = self.username_txt.get_rect(center = (self.w//2, 140))
     
     def get_current_user_data(self):
         ''' Zwraca id i username akrualnego gracza z tabeli polaczenia w bazie danych'''
@@ -107,8 +122,10 @@ class UserSelectionScreen(GameScreen):
             
     def display_texts_and_buttons(self):
         for i in self.txt_to_bt_rect_map:
-            self.screen.blit(self.delete_user_button, i[1][1])
+            self.screen.blit(self.delete_user_button, i[1][0][1])
+            self.screen.blit(self.select_user_button, i[1][1][1])
             self.screen.blit(i[0][0], i[0][1])
+            
             
         
     def display(self):
@@ -130,15 +147,23 @@ class UserSelectionScreen(GameScreen):
     def delete_user(self):
         # print(self.button_rects_to_display)
         for btn in self.button_rects_to_display:
-            if btn[1].collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
-                print(btn[0])
-                self.storage_driver.delete_user(btn[0])
-                self.update_mapping()
-                pygame.time.wait(150)
-
-
+            if len(self.userids) > 0:
+                if btn[0][1].collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+                    print(btn[0])
+                    self.storage_driver.delete_user(btn[0][0])
+                    self.update_mapping()
+                    pygame.time.wait(150)
+                
     def select_user(self):
-        pass
+        for btn in self.button_rects_to_display:
+                if btn[1][1].collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+                    print("klik klak")
+                    self.storage_driver.set_current_user(btn[1][0])
+                    self.update_mapping()
+                    print(self.cur_username)
+                    pygame.time.wait(150)
+
+
 
     def click_menu_button(self) -> int:
         # !!!! zwraca odpowiedni numer stanu, zgodny z GameState.State

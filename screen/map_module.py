@@ -92,11 +92,11 @@ class Map(GameScreen):
     def display_score_and_money(self):
         self.calculate_score()
         self.score_txt = self.font.render(f'score: {self.score}', True, 'gold')
-        self.score_txt_rect = self.score_txt.get_rect(topleft = (10, 10))
+        self.score_txt_rect = self.score_txt.get_rect(topleft = (5, 10))
         self.money_txt = self.font.render(f'coins: {self.player1.game_money}', True, 'gold')
-        self.money_txt_rect = self.money_txt.get_rect(topleft = (10, 30))
+        self.money_txt_rect = self.money_txt.get_rect(topleft = (5, 30))
         self.highscore_txt = self.font.render(f'HS: {self.highscore}', True, 'black')
-        self.highscore_txt_rect = self.highscore_txt.get_rect(topleft = (10, 50))
+        self.highscore_txt_rect = self.highscore_txt.get_rect(topleft = (5, 50))
 
         self.screen.blit(self.score_txt, self.score_txt_rect)
         self.screen.blit(self.highscore_txt, self.highscore_txt_rect)

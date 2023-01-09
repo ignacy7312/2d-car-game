@@ -320,6 +320,7 @@ class UserSelectionScreenState(GameState):
         self.usersel_screen.display_buttons()
         self.usersel_screen.click_buttons()
         self.usersel_screen.delete_user()
+        self.usersel_screen.select_user()
 
 
     def get_next_state(self) -> GameState.State:
