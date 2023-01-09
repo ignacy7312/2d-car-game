@@ -38,7 +38,7 @@ class DatabaseUtil():
 
     def create_user(self, username):
         '''stworz nowego uzytkownika - wiersz w tabeli user'''
-        id = max(self.get_all_user_idx()) + 1
+        id = (max(self.get_all_user_idx()) + 1) if self.get_all_user_idx() else 0
         sql = f''' INSERT INTO user(id, name, high_score, coins, games_played, time_spent)
                 VALUES(?,?,0,0,0,0) '''
         self.cursor.execute(sql, (id, username))
@@ -60,7 +60,7 @@ class DatabaseUtil():
     def create_game_row(self, gd):
         '''Dodaj informacje o zagranej grze'''
         sql = ''' INSERT INTO games(user_id, car_id, duration, coins_collected, score)
-              VALUES(?,?,?,?,?) '''
+            VALUES(?,?,?,?,?) '''
         self.cursor.execute(sql, gd)
         self.connection.commit()
 
@@ -252,11 +252,14 @@ class DatabaseUtil():
         self.connection.commit()
 
 if __name__ == '__main__':
-    #sd = DatabaseUtil()
+    sd = DatabaseUtil()
     #sd.lock_cars()
     #sd.set_coins(300)
     #sd.set_username('uzytkownik')
     #print('123')
     #sd.update_highscore(200)
+    #sd.create_user("krysztof")
+    #sd.delete_user(1)
+    #sd.delete_user(2)
     print(sd.get_all_user_idx())
     

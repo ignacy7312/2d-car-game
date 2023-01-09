@@ -14,43 +14,86 @@ class UserSelectionScreen(GameScreen):
         super().__init__(w, h)
         
         self.storage_driver = StorageDriver()
-        self.username = self.storage_driver.get_current_username()
-        self.username_to_choose = ['imie1', 'imie2', 'imie3', 'imie4', 'imie5']
-
+        self.username_to_choose = ['imie1', 'imie2', 'imie3', 'imie4', 'imie5', 'imie8', 'imie7', 'imie6']
         self.user_limit = 4
+        
+        
+        # pobierz z bazy danych id i nazwe aktualnego uzytkownika
+        self.curr_id, self.cur_username = self.get_current_user_data()
+        # pobierz z bazy danych wszystkie id oraz nazwy uzytkownikow
         self.userids = self.storage_driver.get_all_user_idx()
+        assert self.userids, f'puste userids'
         self.usernames = self.storage_driver.get_all_usernames()
+        assert self.usernames, f'puste usernames'
+        # przypisz id do nazwy
+        self.user_id_map = dict((i,j) for i,j in zip(self.userids, self.usernames))
+        print(self.user_id_map)
         
         self.user_count = len(self.userids)
+        assert self.user_count > 0, f'pusta liczba uzytkownikow'
         
-        self.username_txt = self.font.render(f"Current User: {self.username}", True, 'black')
+        self.username_txt = self.font.render(f"Current User: {self.cur_username}", True, 'black')
         self.username_txt_rect = self.username_txt.get_rect(center = (self.w//2, 140))
-
         self.limit_txt = self.font.render(f"Limit of users: 3", True, 'black')
         self.limit_txt_rect = self.limit_txt.get_rect(center = (self.w//2, 40))
-
         self.limit_reached_txt = self.font.render(f"max users created", True, 'black')
         self.limit_reached_txt_rect = self.limit_reached_txt.get_rect(center = (self.w//2, 80))
         
         self.add_user_button = pygame.image.load('textures/buttons/adduserbtn.png').convert_alpha()
         self.add_user_button_rect = self.add_user_button.get_rect(center = (300, 600))
-
         self.delete_user_button = pygame.image.load('textures/buttons/deluserbtn.png').convert_alpha()
         self.delete_user_button = pygame.transform.rotozoom(self.delete_user_button, 0, 0.7)
-
-        
         self.menu_button = pygame.image.load('textures/buttons/minimenubtn.png').convert_alpha()
         self.menu_button_rect = self.menu_button.get_rect(center = (500, 720))
 
 
-        self.texts_to_display = []
-        self.buttons_to_display = []
-        self.usernames_wo_current = [uname for uname in self.usernames if uname != self.username]
-        self.id_to_btn_height_map = {}
-
-        self.create_texts_and_buttons()
+        self.text_and_rects_to_display = self.generate_texts_and_rects()
+        self.button_rects_to_display = self.generate_button_rects()
+        
+        # self.id_to_btn_height_map = dict( (k,m) for k,m in zip(self.userids,[(i[0], i[1]) for i in zip(self.text_and_rects_to_display, self.button_rects_to_display)]))
+        
+        self.txt_to_bt_rect_map = [(i,j) for i,j in zip(self.text_and_rects_to_display, self.button_rects_to_display)]
+        
+        # print(self.id_to_btn_height_map[0])
+        print(self.user_count, self.userids, self.cur_username, self.usernames)
+        # self.create_texts_and_buttons()
         
         
+        
+    def generate_texts_and_rects(self):
+        assert self.user_id_map, f"brak userow i id"
+        tmp = []
+        for i, j in (zip(self.user_id_map.keys(), self.user_id_map.values())):
+            if (i != self.curr_id):
+                utxt = self.font.render(f"User:{j}, id:{i}", True, 'black')
+                utxt_rect = utxt.get_rect(center = (200, 100 + i*100))
+                tmp.append((utxt, utxt_rect))
+        return tmp
+    
+    def generate_button_rects(self):
+        assert self.user_id_map, f"brak userow i id"
+        tmp = []
+        for i in zip(self.user_id_map.keys(), self.user_id_map.values()):
+            if (i[0] != self.curr_id):
+                bt_rect = (i[0], self.delete_user_button.get_rect(center=(500, 100+ i[0]*100)))
+                #self.id_to_btn_height_map[200 + i*100] = i
+                tmp.append(bt_rect)
+        return tmp
+        
+        
+    def update_mapping(self):
+        self.userids = self.storage_driver.get_all_user_idx()
+        self.usernames = self.storage_driver.get_all_usernames()
+        self.user_count = len(self.userids)
+        self.user_id_map = dict((i,j) for i,j in zip(self.userids, self.usernames))
+        self.text_and_rects_to_display = self.generate_texts_and_rects()
+        self.button_rects_to_display = self.generate_button_rects()    
+        self.txt_to_bt_rect_map = [(i,j) for i,j in zip(self.text_and_rects_to_display, self.button_rects_to_display)]
+    
+    def get_current_user_data(self):
+        ''' Zwraca id i username akrualnego gracza z tabeli polaczenia w bazie danych'''
+        return self.storage_driver.get_current_user_id(), self.storage_driver.get_current_username()
+    
     def display_buttons(self):
         self.screen.blit(self.menu_button, self.menu_button_rect)
         self.screen.blit(self.add_user_button, self.add_user_button_rect)
@@ -62,56 +105,37 @@ class UserSelectionScreen(GameScreen):
         if self.user_count >= self.user_limit:
             self.screen.blit(self.limit_reached_txt, self.limit_reached_txt_rect)
             
+    def display_texts_and_buttons(self):
+        for i in self.txt_to_bt_rect_map:
+            self.screen.blit(self.delete_user_button, i[1][1])
+            self.screen.blit(i[0][0], i[0][1])
+            
         
     def display(self):
         self.screen.fill('lightblue')
         self.display_texts()
-        self.display_users()
-        #print(self.id_to_btn_height_map)
-        self.get_id_to_delete()
+        self.display_texts_and_buttons()
 
-    
 
-    def display_users(self):
-        for i in zip(self.buttons_to_display, self.texts_to_display):
-            self.screen.blit(self.delete_user_button, i[0])
-            self.screen.blit(i[1][0], i[1][1])
 
-    def create_texts_and_buttons(self):
-        for i, udata in enumerate(zip(self.userids, self.usernames_wo_current)):
-            utxt = self.font.render(f"User:{udata[1]}, id:{udata[0]}", True, 'black')
-            utxt_rect = utxt.get_rect(center = (200, 200 + i*100))
-            bt_rect = self.delete_user_button.get_rect(center=(500, 200+ i*100))
-            self.id_to_btn_height_map[200 + i*100] = udata[0]
-            self.texts_to_display.append((utxt, utxt_rect))
-            self.buttons_to_display.append(bt_rect)
 
     def add_user(self):
         if self.user_count < self.user_limit:
             uname = random.choice([i for i in self.username_to_choose if i not in self.usernames])
             self.storage_driver.create_user(uname)
-            self.userids = self.storage_driver.get_all_user_idx()
-            self.usernames = self.storage_driver.get_all_usernames()
-            self.usernames_wo_current = self.usernames.remove(self.username)
-            self.create_texts_and_buttons()
+            self.update_mapping()
+            
 
 
     def delete_user(self):
-        for btn in self.buttons_to_display:
-            if btn.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
-                self.storage_driver.delete_user(self.id_to_btn_height_map[btn.center[1]])
-                self.userids = self.storage_driver.get_all_user_idx()
-                self.usernames = self.storage_driver.get_all_usernames()
-                self.usernames_wo_current = self.usernames.remove(self.username)
-                self.create_texts_and_buttons()
+        # print(self.button_rects_to_display)
+        for btn in self.button_rects_to_display:
+            if btn[1].collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+                print(btn[0])
+                self.storage_driver.delete_user(btn[0])
+                self.update_mapping()
                 pygame.time.wait(150)
 
-    def get_id_to_delete(self):
-        for btn in self.buttons_to_display:
-            if btn.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
-                pygame.time.wait(150)
-                print(self.id_to_btn_height_map[btn.center[1]])
-                return self.id_to_btn_height_map[btn.center[1]]
 
     def select_user(self):
         pass

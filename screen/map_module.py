@@ -38,6 +38,8 @@ class Map(GameScreen):
         self.sounds=music.Music()
         self.game_over = False
         
+        self.storagedriver = StorageDriver()
+        self.highscore = self.storagedriver.get_highscore()[0]
         self.score = 0
 
         # dodawanie serduszek oraz ich skalowanie, myśle że można to gdzies przenieść w dyskretne miejsce żeby oczy nie bolały
@@ -93,8 +95,11 @@ class Map(GameScreen):
         self.score_txt_rect = self.score_txt.get_rect(topleft = (10, 10))
         self.money_txt = self.font.render(f'coins: {self.player1.game_money}', True, 'gold')
         self.money_txt_rect = self.money_txt.get_rect(topleft = (10, 30))
+        self.highscore_txt = self.font.render(f'HS: {self.highscore}', True, 'black')
+        self.highscore_txt_rect = self.highscore_txt.get_rect(topleft = (10, 50))
 
         self.screen.blit(self.score_txt, self.score_txt_rect)
+        self.screen.blit(self.highscore_txt, self.highscore_txt_rect)
         self.screen.blit(self.money_txt, self.money_txt_rect)
         
     def increase_speed(self):
