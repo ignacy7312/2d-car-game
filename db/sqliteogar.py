@@ -39,8 +39,8 @@ class DatabaseUtil():
     def create_user(self, username):
         '''stworz nowego uzytkownika - wiersz w tabeli user'''
         id = (max(self.get_all_user_idx()) + 1) if self.get_all_user_idx() else 0
-        sql = f''' INSERT INTO user(id, name, high_score, coins, games_played, time_spent)
-                VALUES(?,?,0,0,0,0) '''
+        sql = f''' INSERT INTO user(id, name, high_score, coins, games_played, time_spent, car0, car1,car2)
+                VALUES(?,?,0,0,0,0,1,0,0) '''
         self.cursor.execute(sql, (id, username))
         self.connection.commit()
 
@@ -52,8 +52,8 @@ class DatabaseUtil():
 
     def create_car(self, cd):
         '''Dodaj nowe auto'''
-        sql = ''' INSERT INTO cars(id, name, price, is_unlocked, path_to_graphics)
-                VALUES(?,?,?,?,?) '''
+        sql = ''' INSERT INTO cars(id, name, price, path_to_graphics)
+                VALUES(?,?,?,?) '''
         self.cursor.execute(sql, cd)
         self.connection.commit()
 
@@ -198,16 +198,18 @@ class DatabaseUtil():
         
     def is_car_unlocked(self, car_id) ->bool:
         '''zwraca True jezeli auto jest odblokowane lub False jezeli nie jest'''
-        return self.cursor.execute("SELECT is_unlocked FROM cars WHERE id = ?", (car_id,)).fetchone()[0]
+        id = self.get_current_user_id()
+        return self.cursor.execute(f"SELECT car{car_id} FROM user WHERE id = ?", (id,)).fetchone()[0]
 
     def unlock_car(self, car_id: int):
         '''dostaje id auta do odblokowania, sprawdza czy auto nie jest juz odblokowane i odblokowuje.
         zwraca True jezeli odblokowano i False jezeli nie odblokowano'''
         is_unlocked = self.is_car_unlocked(car_id)
+        id = self.get_current_user_id()
         if not is_unlocked:
-            sql = f''' UPDATE cars
-                SET is_unlocked = ? WHERE id = ?'''
-            self.cursor.execute(sql, (1, car_id ))
+            sql = f''' UPDATE user
+                SET car{car_id} = ? WHERE id = ?'''
+            self.cursor.execute(sql, (1, id ))
             self.connection.commit()
             
     def get_path_to_car_image(self, car_id):
@@ -261,13 +263,22 @@ class DatabaseUtil():
 if __name__ == '__main__':
     sd = DatabaseUtil()
     #sd.lock_cars()
-    #sd.set_coins(300)
+    sd.set_coins(120)
     #sd.set_username('uzytkownik')
     #print('123')
     #sd.update_highscore(200)
-    #sd.create_user("test")
+    
+    #sd.delete_user(0)
+    #sd.create_user("ja")
     #sd.delete_user(1)
-    #sd.delete_user(2)
-    sd.set_current_user(10)
+    #sd.set_current_user(0)
+    # print(sd.is_car_unlocked(0))
+    # print(sd.is_car_unlocked(1))
+    # print(sd.is_car_unlocked(2))
+    # sd.unlock_car(2)
+    # print(sd.is_car_unlocked(0))
+    # print(sd.is_car_unlocked(1))
+    # print(sd.is_car_unlocked(2))
+    
     print(sd.get_all_user_idx())
     

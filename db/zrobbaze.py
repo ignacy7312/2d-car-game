@@ -29,16 +29,16 @@ def create_table(conn, create_table_sql):
 
 
 def create_user(conn, ud):
-    sql = ''' INSERT INTO user(id, name, high_score, coins, games_played, time_spent)
-              VALUES(?,?,?,?,?,?) '''
+    sql = ''' INSERT INTO user(id, name, high_score, coins, games_played, time_spent, car0, car1, car2)
+              VALUES(?,?,?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, ud)
     conn.commit()
     return cur.lastrowid
 
 def create_car(conn, cd):
-    sql = ''' INSERT INTO cars(id, name, price, is_unlocked, path_to_graphics)
-              VALUES(?,?,?,?,?) '''
+    sql = ''' INSERT INTO cars(id, name, price, path_to_graphics)
+              VALUES(?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, cd)
     conn.commit()
@@ -72,14 +72,16 @@ def main(db_file):
                                         high_score integer,
                                         coins integer CHECK (coins >= 0),
                                         games_played integer,
-                                        time_spent integer
+                                        time_spent integer,
+                                        car0 integer CHECK (car0 == 1),
+                                        car1 integer,
+                                        car2 integer
                                     ); """
 
     sql_create_cars_table = """ CREATE TABLE IF NOT EXISTS cars (
                                         id integer PRIMARY KEY,
                                         name text NOT NULL,
                                         price integer,
-                                        is_unlocked integer,
                                         path_to_graphics text NOT NULL
                                     ); """
     
@@ -100,16 +102,16 @@ def main(db_file):
                                 );"""
 
 
-    sql = ''' INSERT INTO user(id, name, high_score, coins, games_played, time_spent)
-              VALUES(?,?,?,?,?,?) '''
-    sql2 = ''' INSERT INTO cars(id, name, price, is_unlocked, path_to_graphics)
-              VALUES(?,?,?,?,?) '''
+    sql = ''' INSERT INTO user(id, name, high_score, coins, games_played, time_spent,car0,car1,car2)
+              VALUES(?,?,?,?,?,?,?,?,?) '''
+    sql2 = ''' INSERT INTO cars(id, name, price, path_to_graphics)
+              VALUES(?,?,?,?) '''
 
-    user_data = (0, "ja", 0, 0, 0, 0)
+    user_data = (0, "ja", 0, 0, 0, 0,1,0,0)
     
-    car0_data = (0, "gtr", 0, 1, 'textures/czerwonegora.png')
-    car1_data = (1, "lambo", 100, 0, 'textures/lambogora.png')
-    car2_data = (2, "supra", 500, 0, 'textures/bialegora.png')
+    car0_data = (0, "gtr", 0, 'textures/czerwonegora.png')
+    car1_data = (1, "lambo", 100,'textures/lambogora.png')
+    car2_data = (2, "supra", 500, 'textures/bialegora.png')
     
     gamedata = (0, 0, 10, 5, 2000)
     mapdata = (0, 0)
@@ -134,7 +136,7 @@ def main(db_file):
         c = create_car(conn, car1_data)
         d = create_car(conn, car2_data)
         z = create_mapowania(conn, mapdata)
-        #e = create_gamedata(conn, gamedata)
+        e = create_gamedata(conn, gamedata)
 
         # tutaj tylko dla testu / pierwsze stworzenie:
         # e = create_mapowania(conn, mapdata)
