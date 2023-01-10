@@ -7,6 +7,7 @@ import settings
 from screen.game_screen_class import GameScreen
 from character.player import Player
 from character.obstacle import StaticObstacle, DynamicObstacle
+from character.map_element import Baner
 from character.coin import Coin
 from screen import music
 
@@ -27,10 +28,7 @@ class Map(GameScreen):
     def __init__(self, w, h, selected_player):
         super().__init__(w, h)
         self.font = pygame.font.Font("textures/font.ttf", 16)
-        self.baner = pygame.image.load('textures/baner.png').convert_alpha()
-        self.baner = pygame.transform.rotozoom(self.baner, 0, 0.30) # powinna być na to funkcja
-        # i ogólnie elementy mapy pewnie powinny być w jakiejś liście
-        self.baner_rect = self.baner.get_rect(center = (self.w - 150, 300))
+        
         self.game_speed = 1 
         self.player1 = Player(350,670, selected_player) # wstępna pozycja
         self.obstacles = []
@@ -42,12 +40,14 @@ class Map(GameScreen):
         self.highscore = self.storagedriver.get_highscore()[0]
         self.score = 0
 
-        self.toggle_debug = False
+        self.toggle_debug = True
 
 
         self.scroll = 0
 
         self.coins = []
+        
+        self.baner = None
         
         self.playersprite = pygame.sprite.GroupSingle(self.player1)
 
@@ -121,6 +121,7 @@ class Map(GameScreen):
         self.update_player()
         self.update_obstacles()
         self.update_coins()
+        self.update_baner()
                 
     def update_player(self):
         #self.player1.move_to_initial_pos()
@@ -196,6 +197,25 @@ class Map(GameScreen):
                 del coin    
             else:
                 self.coins.append(coin)
+                
+    def add_baner(self):
+        # dadawanie banera
+        if not self.baner:
+            if random.randint(1,100) % 97 == 0:
+                self.baner = Baner()
+    
+    def kill_baner(self):
+        # usuwanie banera jak wyjdzie poza mapę
+        if self.baner:
+            if self.baner.y > 1000:
+                self.baner = None
+    
+    def update_baner(self):
+        self.add_baner()
+        self.kill_baner()
+        if self.baner:
+            self.baner.move(self.game_speed)
+            self.baner.rect.y = self.baner.y
 
     def collect_coin(self):
         # zbiera monetkę jeżeli auto się z nią zderzy
@@ -237,10 +257,11 @@ class Map(GameScreen):
     def toggle_player_inivincible(self):
         self.player1.invincible = True if pygame.time.get_ticks() <= self.player1.blink_invinc_end_time + 200 else False
             
-    def display_map_elements(self):
+    # def display_map_elements(self):
         # wyświetla elementy mapy, takie jak np. baner
-        self.screen.blit(self.baner, self.baner_rect)
-
+        # self.screen.blit(self.baner, self.baner_rect)
+        # if self.baner:
+        #     print("YES")
 
     def display_player(self):
         # FUNKCJA KTORA MIGA GRACZEM
@@ -273,6 +294,9 @@ class Map(GameScreen):
 
         for obstacle in self.obstacles:
             obstacle.display_character(self.screen)
+            
+        if self.baner:
+            self.baner.display_character(self.screen)
         
 
     def calculate_score(self):
