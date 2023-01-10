@@ -4,7 +4,7 @@ from sqlite3 import Error
 # ponizsze funckje odpalone tylko raz - zeby utworzyc db
 
 
-db_file = 'baza2.db'
+db_file = 'db/baza2.db'
 
 def create_connection(db_file):
     '''create a database connection to a SQLite database'''
@@ -60,11 +60,26 @@ def create_gamedata(conn, gd):
     conn.commit()
     return cur.lastrowid
 
+def create_gamesettings(conn, gs):
+    sql = ''' INSERT INTO settings(WIDTH, HEIGHT, FPS, sounds)
+              VALUES(?,?,?,?) '''
+    cur = conn.cursor()
+    cur.execute(sql, gs)
+    conn.commit()
+    return cur.lastrowid
+
 def main(db_file):
     conn = create_connection(db_file)
 
     # ponizszy kod tworzy trzy tabele w bazie danych 
     # tabela mapowanie odwołuje się do dwóch poprzednich i służy do opierdalania aktualnego użytkownika
+    
+    sql_create_game_settings_table = """ CREATE TABLE IF NOT EXISTS settings (
+                                        WIDTH integer PRIMARY KEY,
+                                        HEIGHT integer,
+                                        FPS integer,
+                                        sounds integer
+                                    ); """
     
     sql_create_user_table = """ CREATE TABLE IF NOT EXISTS user (
                                         id integer PRIMARY KEY,
@@ -115,6 +130,8 @@ def main(db_file):
     
     gamedata = (0, 0, 10, 5, 2000)
     mapdata = (0, 0)
+    
+    setdata = (600, 800, 30, 1)
 
     sql3 = '''SELECT user.name 
             FROM user INNER JOIN cur_user_car ON user.id == cur_user_car.user_id
@@ -127,16 +144,18 @@ def main(db_file):
 
     with conn:
         # egzekucja poleceń bazodanowych tworzących poszczególne tabele
-        create_table(conn, sql_create_user_table)
-        create_table(conn, sql_create_cars_table)
-        create_table(conn, sql_create_games_table)
-        create_table(conn, sql_create_mapping_table)
-        a = create_user(conn, user_data)
-        b = create_car(conn, car0_data)
-        c = create_car(conn, car1_data)
-        d = create_car(conn, car2_data)
-        z = create_mapowania(conn, mapdata)
-        e = create_gamedata(conn, gamedata)
+        # create_table(conn, sql_create_user_table)
+        # create_table(conn, sql_create_game_settings_table)
+        # create_table(conn, sql_create_cars_table)
+        # create_table(conn, sql_create_games_table)
+        # create_table(conn, sql_create_mapping_table)
+        # a = create_user(conn, user_data)
+        # b = create_car(conn, car0_data)
+        # c = create_car(conn, car1_data)
+        # d = create_car(conn, car2_data)
+        # z = create_mapowania(conn, mapdata)
+        # e = create_gamedata(conn, gamedata)
+        # f = create_gamesettings(conn, setdata)
 
         # tutaj tylko dla testu / pierwsze stworzenie:
         # e = create_mapowania(conn, mapdata)
@@ -144,8 +163,8 @@ def main(db_file):
         
         # costam z tablicy:
         cur = conn.cursor()
-        cur.execute(sql3)
-        cur.execute(sql4)
+        # cur.execute(sql3)
+        # cur.execute(sql4)
         
 
 

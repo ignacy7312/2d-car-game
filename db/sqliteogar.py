@@ -250,6 +250,19 @@ class DatabaseUtil():
                 SET user_id = ?'''
         self.cursor.execute(sql, (uid, ))
         self.connection.commit()
+        
+    def set_sounds(self, play):
+        ''' Ustaw w tabeli ustawień boola do dźwięków'''
+        sql = ''' UPDATE settings
+                SET sounds = ?'''
+        self.cursor.execute(sql, (play, ))
+        self.connection.commit()
+        
+    def get_sounds(self):
+        ''' zwróć boola czy grać dźwięki czy nie'''
+        sql = '''SELECT sounds FROM settings '''
+        return self.cursor.execute(sql).fetchone()[0]
+    
     
     ''' TYCH PONIZEJ UZYWAC TYLKO W SKRAJNYCH WYPADKACH '''
 
@@ -263,7 +276,7 @@ class DatabaseUtil():
 if __name__ == '__main__':
     sd = DatabaseUtil()
     #sd.lock_cars()
-    sd.set_coins(120)
+    # sd.set_coins(120)
     #sd.set_username('uzytkownik')
     #print('123')
     #sd.update_highscore(200)

@@ -42,7 +42,7 @@ class Map(GameScreen):
         self.highscore = self.storagedriver.get_highscore()[0]
         self.score = 0
 
-        # dodawanie serduszek oraz ich skalowanie, myśle że można to gdzies przenieść w dyskretne miejsce żeby oczy nie bolały
+        self.toggle_debug = False
 
 
         self.scroll = 0
@@ -84,9 +84,6 @@ class Map(GameScreen):
                 x = point[0] + obstacle.x - 28
                 y = point[1] + obstacle.y
                 pygame.draw.circle(self.screen, 'blue', (x,y), 2)
-
-
-
 
 
     def display_score_and_money(self):
@@ -210,26 +207,11 @@ class Map(GameScreen):
                 del coin
     
 
-    """def check_for_obs_collision(self) -> bool:
-        # sprawdza czy występuje kolizja gracza z przeszkodą
-        for obstacle in self.obstacles:
-            if pygame.Rect.colliderect(obstacle.rect, self.player1.rect) and (not self.player1.invincible) and (not self.player1.is_colliding):
-                self.player1.blink_invinc_end_time = pygame.time.get_ticks() + 1000
-                self.player1.hp -= 1
-                self.obstacles.remove(obstacle)
-                self.player1.is_colliding = True
-                del obstacle
-                # zwraca funkcję sprawdzającą hp, która zwraca True jeżeli HP == 0,
-                # czyli ta funkcja zwroci True jezeli gracz straci hp - gra ma sie skonczyc
-                return self.life.checking_hp(self.player1)
-        self.player1.is_colliding = False
-        return False"""
-
 
     def check_for_obs_collision(self) -> bool:
         # sprawdza czy występuje kolizja gracza z przeszkodą używając maski - pixel perferct collision
         col = False
-       
+
         for obstacle in self.obstacles:
             # wykorzystanie pygame sprite żeby nie kombinować z dziwnymi obliczeniami
             obs = pygame.sprite.GroupSingle(obstacle) 
@@ -278,10 +260,13 @@ class Map(GameScreen):
     def display_characters(self):
         # wyświetla charactery    
         self.display_player()
-        #self.player1.display_character(self.screen)
         
         # debug:
-        self.display_debug_rect()
+        if pygame.key.get_pressed()[pygame.K_h]:
+            self.toggle_debug = not self.toggle_debug
+            pygame.time.wait(50)
+        if self.toggle_debug:
+            self.display_debug_rect()
         
         for coin in self.coins:
             coin.display_character(self.screen)

@@ -66,13 +66,12 @@ class GameAgent(GameState):
         #self.menu_obj = MenuState(self.w, self.h)
         self.storage_driver = StorageDriver()
         self.curr_state_obj = MenuState(self.w, self.h) # pierwotnym stanem jest menu
-        self.audio=music.Music()
+        self.audio = music.Music()
         self.audio.music_play("./sounds/elevator.wav")
 
         self.selected_player = self.storage_driver.get_current_car()
         # counts time taken by one game
         self.game_timer = 0
-
 
 
     def change_state(self, next_state : GameState.State):
@@ -118,6 +117,8 @@ class GameAgent(GameState):
     def execute(self):  
         # wykonanie akcji aktualnie obowiązującego stanu
         self.curr_state_obj.handle()
+        if self.audio.keep_playing():
+            self.audio.music_play("./sounds/elevator.wav")
         # sprawdzenie, czy ma nastąpić zmiana stanu
         self.change_state(self.curr_state_obj.get_next_state())
 
@@ -232,6 +233,7 @@ class MenuState(GameState):
     def handle(self):
         self.menu_screen.display_menu_bg()
         self.menu_screen.display_buttons()
+        self.menu_screen.toggle_sounds()
         
 
     def get_next_state(self) -> GameState.State:

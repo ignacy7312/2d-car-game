@@ -1,8 +1,7 @@
 ## wazne
 
-- BAZA DANYCH Z AUTAMI PRZYPISANYMI DO UZYTKOWNIKA
 - BANER
-- MUTE BUTTON
+
 
 - skrypt na zrobinie umla z kodu 
 - zoptymalizowac spawn obstacle/monety: napisać listę warunków kiedy co może sie respić 
