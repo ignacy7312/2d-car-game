@@ -12,6 +12,7 @@ class StorageDriver(sqliteogar.DatabaseUtil):
         self.car_id = None
         self.name = None
         self.set_and_save_values(kwargs)
+        self.get_values(kwargs)
         
     def set_and_save_values(self, kwargs):
         '''
@@ -35,4 +36,8 @@ class StorageDriver(sqliteogar.DatabaseUtil):
             else:
                 continue
             
+    def get_values(self, kwargs):
+        for arg in kwargs.keys():
+            if arg == 'gethighscore':
+                self.get_highscore()[0]
             

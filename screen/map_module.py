@@ -7,6 +7,7 @@ import settings
 from screen.game_screen_class import GameScreen
 from character.player import Player
 from character.obstacle import StaticObstacle, DynamicObstacle
+from character.map_element import Baner
 from character.coin import Coin
 from screen import music
 
@@ -27,10 +28,7 @@ class Map(GameScreen):
     def __init__(self, w, h, selected_player):
         super().__init__(w, h)
         self.font = pygame.font.Font("textures/font.ttf", 16)
-        self.baner = pygame.image.load('textures/baner.png').convert_alpha()
-        self.baner = pygame.transform.rotozoom(self.baner, 0, 0.30) # powinna być na to funkcja
-        # i ogólnie elementy mapy pewnie powinny być w jakiejś liście
-        self.baner_rect = self.baner.get_rect(center = (self.w - 150, 300))
+        
         self.game_speed = 1 
         self.player1 = Player(350,670, selected_player) # wstępna pozycja
         self.obstacles = []
@@ -38,14 +36,18 @@ class Map(GameScreen):
         self.sounds=music.Music()
         self.game_over = False
         
+        self.storagedriver = StorageDriver()
+        self.highscore = self.storagedriver.get_highscore()[0]
         self.score = 0
 
-        # dodawanie serduszek oraz ich skalowanie, myśle że można to gdzies przenieść w dyskretne miejsce żeby oczy nie bolały
+        self.toggle_debug = True
 
 
         self.scroll = 0
 
         self.coins = []
+        
+        self.baner = None
         
         self.playersprite = pygame.sprite.GroupSingle(self.player1)
 
@@ -84,17 +86,17 @@ class Map(GameScreen):
                 pygame.draw.circle(self.screen, 'blue', (x,y), 2)
 
 
-
-
-
     def display_score_and_money(self):
         self.calculate_score()
         self.score_txt = self.font.render(f'score: {self.score}', True, 'gold')
-        self.score_txt_rect = self.score_txt.get_rect(topleft = (10, 10))
+        self.score_txt_rect = self.score_txt.get_rect(topleft = (5, 10))
         self.money_txt = self.font.render(f'coins: {self.player1.game_money}', True, 'gold')
-        self.money_txt_rect = self.money_txt.get_rect(topleft = (10, 30))
+        self.money_txt_rect = self.money_txt.get_rect(topleft = (5, 30))
+        self.highscore_txt = self.font.render(f'HS: {self.highscore}', True, 'black')
+        self.highscore_txt_rect = self.highscore_txt.get_rect(topleft = (5, 50))
 
         self.screen.blit(self.score_txt, self.score_txt_rect)
+        self.screen.blit(self.highscore_txt, self.highscore_txt_rect)
         self.screen.blit(self.money_txt, self.money_txt_rect)
         
     def increase_speed(self):
@@ -119,6 +121,7 @@ class Map(GameScreen):
         self.update_player()
         self.update_obstacles()
         self.update_coins()
+        self.update_baner()
                 
     def update_player(self):
         #self.player1.move_to_initial_pos()
@@ -194,6 +197,25 @@ class Map(GameScreen):
                 del coin    
             else:
                 self.coins.append(coin)
+                
+    def add_baner(self):
+        # dadawanie banera
+        if not self.baner:
+            if random.randint(1,100) % 97 == 0:
+                self.baner = Baner()
+    
+    def kill_baner(self):
+        # usuwanie banera jak wyjdzie poza mapę
+        if self.baner:
+            if self.baner.y > 1000:
+                self.baner = None
+    
+    def update_baner(self):
+        self.add_baner()
+        self.kill_baner()
+        if self.baner:
+            self.baner.move(self.game_speed)
+            self.baner.rect.y = self.baner.y
 
     def collect_coin(self):
         # zbiera monetkę jeżeli auto się z nią zderzy
@@ -205,26 +227,11 @@ class Map(GameScreen):
                 del coin
     
 
-    """def check_for_obs_collision(self) -> bool:
-        # sprawdza czy występuje kolizja gracza z przeszkodą
-        for obstacle in self.obstacles:
-            if pygame.Rect.colliderect(obstacle.rect, self.player1.rect) and (not self.player1.invincible) and (not self.player1.is_colliding):
-                self.player1.blink_invinc_end_time = pygame.time.get_ticks() + 1000
-                self.player1.hp -= 1
-                self.obstacles.remove(obstacle)
-                self.player1.is_colliding = True
-                del obstacle
-                # zwraca funkcję sprawdzającą hp, która zwraca True jeżeli HP == 0,
-                # czyli ta funkcja zwroci True jezeli gracz straci hp - gra ma sie skonczyc
-                return self.life.checking_hp(self.player1)
-        self.player1.is_colliding = False
-        return False"""
-
 
     def check_for_obs_collision(self) -> bool:
         # sprawdza czy występuje kolizja gracza z przeszkodą używając maski - pixel perferct collision
         col = False
-       
+
         for obstacle in self.obstacles:
             # wykorzystanie pygame sprite żeby nie kombinować z dziwnymi obliczeniami
             obs = pygame.sprite.GroupSingle(obstacle) 
@@ -250,10 +257,11 @@ class Map(GameScreen):
     def toggle_player_inivincible(self):
         self.player1.invincible = True if pygame.time.get_ticks() <= self.player1.blink_invinc_end_time + 200 else False
             
-    def display_map_elements(self):
+    # def display_map_elements(self):
         # wyświetla elementy mapy, takie jak np. baner
-        self.screen.blit(self.baner, self.baner_rect)
-
+        # self.screen.blit(self.baner, self.baner_rect)
+        # if self.baner:
+        #     print("YES")
 
     def display_player(self):
         # FUNKCJA KTORA MIGA GRACZEM
@@ -273,16 +281,22 @@ class Map(GameScreen):
     def display_characters(self):
         # wyświetla charactery    
         self.display_player()
-        #self.player1.display_character(self.screen)
         
         # debug:
-        self.display_debug_rect()
+        if pygame.key.get_pressed()[pygame.K_h]:
+            self.toggle_debug = not self.toggle_debug
+            pygame.time.wait(50)
+        if self.toggle_debug:
+            self.display_debug_rect()
         
         for coin in self.coins:
             coin.display_character(self.screen)
 
         for obstacle in self.obstacles:
             obstacle.display_character(self.screen)
+            
+        if self.baner:
+            self.baner.display_character(self.screen)
         
 
     def calculate_score(self):
