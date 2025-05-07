@@ -1,28 +1,41 @@
-# 2d-car-game
-a project for the oop class. 
+# 2D Car Game
 
-# Schemat projektu
+A project developed for the OOP (Object-Oriented Programming) class.
 
-Technologia: Python i biblioteka Pygame
+## 🛠 Project Overview
 
-Gra 2D, polega na jeździe samochodem w ruchu ulicznym omijając jak najwięcej przeszkód i zbierając jak najwięcej punktów oraz monet, 
-za które można robić upgrade auta.
+**Technology:** Python and the Pygame library.
 
-Celem gry jest bezkolizyjnie dojechać jak najdalej - zebrać jak najwięcej punktów, przy ciągle rosnącej prędkości/tempie.
+This is a 2D driving game where the player controls a car in urban traffic, avoiding obstacles and collecting as many points and coins as possible. Coins can be used to upgrade the vehicle.
 
-Możliwości:
-- wybór auta
-- kustomizacja auta
-- kierowanie pojazdem (lewo-prawo)
-- zbieranie punktów oraz monet
-- omijanie przeszkód pojawiających się losowo na drodze
-- zbieranie wzmocnień oraz HP ??
-- zapisanie postępu i wczytanie go po włączeniu gry (serialization)
+The goal is to drive as far as possible without crashing, with the speed and difficulty increasing over time.
 
-kilka ekranów:
-- main menu
-- wybór pojazdu (garaż)
-- mapa
+## 🎮 Features
 
+- Car selection
+- Car customization
+- Vehicle control (left/right movement)
+- Collecting points and coins
+- Randomly generated obstacles on the road
+- Power-ups and health pickups
+- Saving and loading game progress (serialization)
+- Sound Effects
+- Database with high score and coins bank
 
-**poruszanie się gracza po osi X, collision detection, liczenie puntków, liczenie czasu, przesuwanie się mapy po osi Y, generowanie przeszkód i wzmocnień, zmiana ekranów**
+## 🧩 Game Screens
+
+- Main Menu
+- Vehicle Selection (Garage)
+- Map / Gameplay View
+
+## 🔧 Key Mechanics
+
+- Horizontal (X-axis) player movement
+- Collision detection
+- Scoring system
+- Time tracking
+- Scrolling map (Y-axis movement)
+- Random generation of obstacles and power-ups
+- Screen transitions
+
+![image](https://github.com/user-attachments/assets/7575a4fc-4e11-4299-8f59-dda9ca32a212)
